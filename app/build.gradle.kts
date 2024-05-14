@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -16,6 +18,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "3.0"
+        archivesName = "DoughCalculator v$versionName"
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
@@ -32,6 +35,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
