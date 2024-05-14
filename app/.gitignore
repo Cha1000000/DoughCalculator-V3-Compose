@@ -31,3 +31,4 @@ google-services.json
 
 # Android Profiling
 *.hprof
+/schemas/com.easycook.doughcalculator.database.DoughRecipesDatabase/1.json
