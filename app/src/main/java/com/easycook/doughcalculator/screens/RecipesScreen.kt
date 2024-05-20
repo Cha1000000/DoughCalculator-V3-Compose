@@ -3,24 +3,23 @@ package com.easycook.doughcalculator.screens
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.AlertDialog
 //noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -28,18 +27,21 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,6 +51,7 @@ import com.easycook.doughcalculator.R
 import com.easycook.doughcalculator.RecipeViewModel
 import com.easycook.doughcalculator.common.CALCULATION_SCREEN
 import com.easycook.doughcalculator.database.DoughRecipeEntity
+import com.easycook.doughcalculator.ui.theme.DoughCalculatorTheme
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -76,7 +79,7 @@ fun RecipesScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start=12.dp, top=78.dp, end=12.dp, bottom=20.dp),
+                .padding(start = 12.dp, top = 78.dp, end = 12.dp, bottom = 20.dp),
             //verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             state = state,
@@ -94,9 +97,14 @@ fun RecipesScreen(
 }
 
 @Composable
-fun RecipeItem(item: DoughRecipeEntity, navController: NavHostController, viewModel: RecipeViewModel = hiltViewModel()) {
+fun RecipeItem(
+    item: DoughRecipeEntity,
+    navController: NavHostController,
+    viewModel: RecipeViewModel = hiltViewModel()
+) {
     val cardBackground = colorScheme.background
     var isFavorite by remember { mutableStateOf(item.isFavorite) }
+    val openDialog = rememberSaveable { mutableStateOf(false) }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -133,7 +141,7 @@ fun RecipeItem(item: DoughRecipeEntity, navController: NavHostController, viewMo
                 fontSize = 20.sp,
                 textAlign = TextAlign.Start
             )
-            IconButton(onClick = { viewModel.deleteRecipe(item) }) {
+            IconButton(onClick = { openDialog.value = true }) {
                 Icon(
                     modifier = Modifier.size(32.dp),
                     imageVector = Icons.Filled.Delete,
@@ -141,6 +149,56 @@ fun RecipeItem(item: DoughRecipeEntity, navController: NavHostController, viewMo
                     tint = colorScheme.primary,
                 )
             }
+        }
+
+        if (openDialog.value) {
+            ShowConfirmDialog(openDialog, item.title) {
+                viewModel.deleteRecipe(item)
+                openDialog.value = false
+            }
+        }
+    }
+}
+
+@Composable
+fun ShowConfirmDialog(
+    dialogState: MutableState<Boolean>,
+    recipeTitle: String,
+    onConfirm: () -> Unit
+) {
+    DoughCalculatorTheme {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            color = colorScheme.background
+        ) {
+            AlertDialog(
+                onDismissRequest = { dialogState.value = false },
+                title = {
+                    Text(
+                        color = colorScheme.tertiary,
+                        text = stringResource(R.string.delete_confirm_title),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                text = {
+                    Text(
+                        text = stringResource(R.string.recipe_delete_confirm_message, recipeTitle),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                },
+                confirmButton = {
+                    TextButton(onClick = onConfirm) {
+                        Text(text = stringResource(R.string.error_alert_ok_button_yes))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { dialogState.value = false }) {
+                        Text(text = stringResource(R.string.error_alert_ok_button_cancel))
+                    }
+                },
+            )
         }
     }
 }
