@@ -1,3 +1,52 @@
 <resources>
     <string name="app_name">Пропорции теста</string>
+
+    <string name="screen_title_save_recipe">Сохранение рецепта</string>
+    <string name="screen_title_open_recipe">Выбор рецепта</string>
+
+    <string name="water">Вода</string>
+    <string name="flour">Мука</string>
+    <string name="salt">Соль</string>
+    <string name="sugar_honey">Сахар</string>
+    <string name="butter">Масло</string>
+    <string name="title_ingredient">Состав</string>
+    <string name="title_grams">грамм</string>
+    <string name="title_percent">%</string>
+    <string name="title_correction">Изменить</string>
+    <string name="hint_zero">0</string>
+    <string name="flour_const_percent">100</string>
+    <string name="recipe_title">Название</string>
+    <string name="text_field_description">Описание</string>
+
+    <string name="button_calculate_text">Расчитать</string>
+    <string name="button_save_text">Сохранить</string>
+
+    <string name="error_alert_title_error">Ошибка</string>
+    <string name="error_alert_title_warning">Предупреждение</string>
+    <string name="error_alert_title_info">Сообщение</string>
+    <string name="error_alert_ok_button_ok">Ок</string>
+    <string name="error_alert_ok_button_cancel">Отмена</string>
+    <string name="error_alert_description_try_again">Попробуй ещё раз</string>
+    <string name="error_alert_description_no_saved_recipes">У вас ещё нет сохранённых рецептов 🙁</string>
+    <string name="error_invalid_flour_input">⚠️ Укажи вес муки</string>
+    <string name="error_invalid_water_input">⚠️ Укажи вес воды</string>
+    <string name="error_invalid_salt_input">⚠️ Укажи вес соли</string>
+    <string name="error_invalid_water_percent">Не расчитан % воды</string>
+    <string name="error_invalid_salt_percent">Не расчитан % соли</string>
+    <string name="error_invalid_sugar_percent">Не расчитан % сахара</string>
+    <string name="error_invalid_butter_percent">Не расчитан % масла</string>
+    <string name="error_alert_salt_invalid_range">⚠️ допустимая норма превышена (не более 2,5%)</string>
+    <string name="alert_water_valid_range">⚠️ допустимый диапазон: 60–80%</string>
+    <string name="alert_save_empty_data">🚫 Не заполнены пропорции рецепта.</string>
+    <string name="delete_confirm_title">Удаление рецепта</string>
+
+    <string name="recipe_delete_confirm_message">⚠️ Точно хотите удалить рецепт \"%1$s\"?</string>
+    <string name="recipe_create_confirm_message">⚠️ Изменения не сохранены.\nХотите начать заполнение нового рецепта? 🤔</string>
+
+    <string name="menu_item_new">Новый рецепт</string>
+    <string name="menu_item_open">Открыть рецепт</string>
+    <string name="menu_item_save">Сохранить рецепт</string>
+    <string name="unknown_exception_title">Неизвестная ошибка</string>
+    <string name="button_is_favorite_description">В избранное</string>
+    <string name="button_delete_description">Удалить</string>
 </resources>
