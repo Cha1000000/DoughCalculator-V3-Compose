@@ -26,6 +26,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -63,11 +64,10 @@ fun RecipesScreen(
                 title = {
                     Text(
                         text = stringResource(id = R.string.screen_title_open_recipe),
-                        fontSize = 20.sp,
-                        color = Color.White,
+                        style = MaterialTheme.typography.titleLarge,
                     )
                 },
-                backgroundColor = MaterialTheme.colorScheme.primary,
+                backgroundColor = colorScheme.primary,
             )
         },
         //floatingActionButton = { AddRecipeButton(navController) }
@@ -95,7 +95,7 @@ fun RecipesScreen(
 
 @Composable
 fun RecipeItem(item: DoughRecipeEntity, navController: NavHostController, viewModel: RecipeViewModel = hiltViewModel()) {
-    val cardBackground = MaterialTheme.colorScheme.background
+    val cardBackground = colorScheme.background
     var isFavorite by remember { mutableStateOf(item.isFavorite) }
     Card(
         modifier = Modifier
@@ -124,7 +124,7 @@ fun RecipeItem(item: DoughRecipeEntity, navController: NavHostController, viewMo
                     else painterResource(id = R.drawable.ic_favorite_border),*/
                     imageVector = if (!isFavorite) Icons.Filled.FavoriteBorder else Icons.Filled.Favorite,
                     contentDescription = "IsFavourite",
-                    tint = if (isFavorite) Color.Red else MaterialTheme.colorScheme.primary,
+                    tint = if (isFavorite) colorScheme.tertiary else colorScheme.primary,
                 )
             }
             Text(
@@ -138,7 +138,7 @@ fun RecipeItem(item: DoughRecipeEntity, navController: NavHostController, viewMo
                     modifier = Modifier.size(32.dp),
                     imageVector = Icons.Filled.Delete,
                     contentDescription = "Delete",
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = colorScheme.primary,
                 )
             }
         }
