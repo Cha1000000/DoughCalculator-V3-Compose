@@ -3,6 +3,7 @@
 
     <string name="screen_title_save_recipe">Сохранение рецепта</string>
     <string name="screen_title_open_recipe">Выбор рецепта</string>
+    <string name="screen_title_calculation">Расчёт пропорций теста</string>
 
     <string name="water">Вода</string>
     <string name="flour">Мука</string>
@@ -39,14 +40,12 @@
     <string name="alert_water_valid_range">⚠️ допустимый диапазон: 60–80%</string>
     <string name="alert_save_empty_data">🚫 Не заполнены пропорции рецепта.</string>
     <string name="delete_confirm_title">Удаление рецепта</string>
-
     <string name="recipe_delete_confirm_message">⚠️ Точно хотите удалить рецепт\n\"%1$s\"?</string>
     <string name="recipe_create_confirm_message">⚠️ Изменения не сохранены.\nХотите начать заполнение нового рецепта? 🤔</string>
 
     <string name="menu_item_new">Новый рецепт</string>
     <string name="menu_item_open">Открыть рецепт</string>
     <string name="menu_item_save">Сохранить рецепт</string>
+
     <string name="unknown_exception_title">Неизвестная ошибка</string>
-    <string name="button_is_favorite_description">В избранное</string>
-    <string name="button_delete_description">Удалить</string>
 </resources>

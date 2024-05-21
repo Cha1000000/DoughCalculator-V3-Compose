@@ -13,7 +13,7 @@ import javax.inject.Inject
 class RecipeViewModel @Inject constructor(private val database: DoughRecipesDatabase) : ViewModel() {
 
     val recipes = database.dao.getAllRecipes()
-    val recipeEntity: DoughRecipeEntity? = null
+    var recipeEntity: DoughRecipeEntity? = null
 
     fun insertRecipe(recipe: DoughRecipeEntity) = viewModelScope.launch(Dispatchers.IO) {
         database.dao.insert(recipe)

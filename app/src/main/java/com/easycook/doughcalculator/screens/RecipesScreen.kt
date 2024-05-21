@@ -128,7 +128,12 @@ fun RecipeItem(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(cardBackground),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        onClick = { navController.navigate(CALCULATION_SCREEN) }
+        onClick = {
+            viewModel.recipeEntity = item
+            navController.navigate(CALCULATION_SCREEN) {
+                launchSingleTop = true
+            }
+        }
     ) {
         Row(
             modifier = Modifier
@@ -220,10 +225,15 @@ fun ShowConfirmDialog(
 }
 
 @Composable
-fun AddRecipeButton(navController: NavHostController) {
+fun AddRecipeButton(navController: NavHostController, viewModel: RecipeViewModel = hiltViewModel()) {
     FloatingActionButton(
         modifier = Modifier.padding(vertical = 8.dp),
-        onClick = { navController.navigate(CALCULATION_SCREEN) },
+        onClick = {
+            viewModel.recipeEntity = null
+            navController.navigate(CALCULATION_SCREEN) {
+                launchSingleTop = true
+            }
+        },
         shape = CircleShape,
         containerColor = colorScheme.primary
     ) {
