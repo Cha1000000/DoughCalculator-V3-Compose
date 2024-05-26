@@ -5,15 +5,19 @@
     <string name="screen_title_open_recipe">Выбор рецепта</string>
     <string name="screen_title_calculation">Расчёт пропорций теста</string>
 
-    <string name="water">Вода</string>
     <string name="flour">Мука</string>
+    <string name="water">Вода</string>
     <string name="salt">Соль</string>
-    <string name="sugar_honey">Сахар</string>
+    <string name="sugar">Сахар</string>
     <string name="butter">Масло</string>
+    <string name="egg">Яйцо</string>
+    <string name="yeast">Дрожжи</string>
+    <string name="milk">Молоко</string>
     <string name="title_ingredient">Состав</string>
-    <string name="title_grams">грамм</string>
+    <string name="title_grams">Вес (гр.)</string>
     <string name="title_percent">%</string>
     <string name="title_correction">Изменить</string>
+    <string name="title_calculate_by">Считать по</string>
     <string name="hint_zero">0</string>
     <string name="flour_const_percent">100</string>
     <string name="recipe_title">Название</string>

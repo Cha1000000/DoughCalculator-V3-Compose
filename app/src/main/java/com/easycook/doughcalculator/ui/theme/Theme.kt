@@ -25,9 +25,9 @@ import androidx.core.view.WindowCompat
 private val LightColorScheme = lightColorScheme(
     primary = OrangePrimary,
     secondary = OrangeSecondary,
-    tertiary = Accent
+    tertiary = Accent,
 
-    /* Other default colors to override
+    /*/ Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),
     onPrimary = Color.White,

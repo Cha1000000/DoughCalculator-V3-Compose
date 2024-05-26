@@ -52,7 +52,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.easycook.doughcalculator.R
 import com.easycook.doughcalculator.RecipeViewModel
@@ -63,7 +62,7 @@ import com.easycook.doughcalculator.ui.theme.DoughCalculatorTheme
 @Composable
 fun RecipesScreen(
     navController: NavHostController,
-    viewModel: RecipeViewModel = hiltViewModel()
+    viewModel: RecipeViewModel
 ) {
     val recipes = viewModel.recipes.collectAsState(initial = emptyList())
     Scaffold(
@@ -78,7 +77,7 @@ fun RecipesScreen(
                 backgroundColor = colorScheme.primary,
             )
         },
-        floatingActionButton = { AddRecipeButton(navController) }
+        floatingActionButton = { AddRecipeButton(navController, viewModel) }
     ) { paddingValues ->
         val state = rememberLazyListState()
         Box(
@@ -104,7 +103,7 @@ fun RecipesScreen(
                     // Provide a unique key based on the item content
                     key = { _, item -> item.hashCode() }
                 ) { _, item ->
-                    RecipeItem(item, navController)
+                    RecipeItem(item, navController, viewModel)
                 }
             }
         }
@@ -116,7 +115,7 @@ fun RecipesScreen(
 fun RecipeItem(
     item: DoughRecipeEntity,
     navController: NavHostController,
-    viewModel: RecipeViewModel = hiltViewModel()
+    viewModel: RecipeViewModel
 ) {
     val cardBackground = colorScheme.background
     var isFavorite by remember { mutableStateOf(item.isFavorite) }
@@ -225,7 +224,7 @@ fun ShowConfirmDialog(
 }
 
 @Composable
-fun AddRecipeButton(navController: NavHostController, viewModel: RecipeViewModel = hiltViewModel()) {
+fun AddRecipeButton(navController: NavHostController, viewModel: RecipeViewModel) {
     FloatingActionButton(
         modifier = Modifier.padding(vertical = 8.dp),
         onClick = {

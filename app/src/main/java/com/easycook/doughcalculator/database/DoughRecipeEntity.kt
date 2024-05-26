@@ -33,6 +33,15 @@ data class DoughRecipeEntity(
     @ColumnInfo(name = "butter_gram")
     var butterGram: Int = 0,
 
+    @ColumnInfo(name = "egg_gram")
+    var eggGram: Int = 0,
+
+    @ColumnInfo(name = "yeast_gram")
+    var yeastGram: Int = 0,
+
+    @ColumnInfo(name = "milk_gram")
+    var milkGram: Int = 0,
+
     @ColumnInfo(name = "flour_gram_correction")
     var flourGramCorrection: Int = 0,
 
@@ -48,6 +57,15 @@ data class DoughRecipeEntity(
     @ColumnInfo(name = "butter_gram_correction")
     var butterGramCorrection: Int = 0,
 
+    @ColumnInfo(name = "egg_gram_correction")
+    var eggGramCorrection: Int = 0,
+
+    @ColumnInfo(name = "yeast_gram_correction")
+    var yeastGramCorrection: Int = 0,
+
+    @ColumnInfo(name = "milk_gram_correction")
+    var milkGramCorrection: Int = 0,
+
     @ColumnInfo(name = "water_percent")
     var waterPercent: Double = 0.0,
 
@@ -59,4 +77,13 @@ data class DoughRecipeEntity(
 
     @ColumnInfo(name = "butter_percent")
     var butterPercent: Double = 0.0,
+
+    @ColumnInfo(name = "egg_percent")
+    var eggPercent: Double = 0.0,
+
+    @ColumnInfo(name = "yeast_percent")
+    var yeastPercent: Double = 0.0,
+
+    @ColumnInfo(name = "milk_percent")
+    var milkPercent: Double = 0.0
 )

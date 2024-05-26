@@ -8,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.easycook.doughcalculator.navigation.NavGraph
 import com.easycook.doughcalculator.ui.theme.DoughCalculatorTheme
@@ -34,6 +35,6 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MainScreen() {
         val navController = rememberNavController()
-        NavGraph(navController)
+        NavGraph(navController, hiltViewModel())
     }
 }

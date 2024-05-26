@@ -1,5 +1,8 @@
 package com.easycook.doughcalculator
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.easycook.doughcalculator.database.DoughRecipeEntity
@@ -13,7 +16,8 @@ import javax.inject.Inject
 class RecipeViewModel @Inject constructor(private val database: DoughRecipesDatabase) : ViewModel() {
 
     val recipes = database.dao.getAllRecipes()
-    var recipeEntity: DoughRecipeEntity? = null
+    //var recipeEntity: DoughRecipeEntity? = null
+    var recipeEntity by mutableStateOf<DoughRecipeEntity?>(null)
 
     fun insertRecipe(recipe: DoughRecipeEntity) = viewModelScope.launch(Dispatchers.IO) {
         database.dao.insert(recipe)

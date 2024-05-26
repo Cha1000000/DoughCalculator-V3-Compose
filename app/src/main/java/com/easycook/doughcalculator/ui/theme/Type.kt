@@ -1,9 +1,12 @@
 package com.easycook.doughcalculator.ui.theme
 
 import androidx.compose.material3.Typography
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -29,6 +32,12 @@ val Typography = Typography(
         fontSize = 22.sp,
         lineHeight = 28.sp,
         letterSpacing = 0.5.sp,
+    ),
+    titleMedium = TextStyle(
+        color = OrangePrimary,
+        fontFamily = FontFamily(Font(R.font.roboto_medium)),
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 22.sp
     ),
     labelSmall = TextStyle(
         fontFamily = FontFamily.Default,
