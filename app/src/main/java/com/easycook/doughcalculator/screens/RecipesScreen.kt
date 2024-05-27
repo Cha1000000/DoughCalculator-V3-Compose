@@ -79,7 +79,7 @@ fun RecipesScreen(
         },
         floatingActionButton = { AddRecipeButton(navController, viewModel) }
     ) { paddingValues ->
-        val state = rememberLazyListState()
+        //val state = rememberLazyListState()
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -96,7 +96,7 @@ fun RecipesScreen(
                     .fillMaxSize()
                     .padding(start = 24.dp, top = 18.dp, end = 12.dp, bottom = 20.dp),
                 horizontalAlignment = CenterHorizontally,
-                state = state,
+                //state = state,
             ) {
                 itemsIndexed(
                     items = recipes.value,
