@@ -26,13 +26,14 @@
     <string name="button_calculate_text">Расчитать</string>
     <string name="button_save_text">Сохранить</string>
 
-    <string name="error_alert_title_error">Ошибка</string>
-    <string name="error_alert_title_warning">Предупреждение</string>
-    <string name="error_alert_title_info">Сообщение</string>
-    <string name="error_alert_ok_button_yes">Да</string>
-    <string name="error_alert_ok_button_cancel">Отмена</string>
-    <string name="error_alert_description_try_again">Попробуй ещё раз</string>
-    <string name="error_alert_description_no_saved_recipes">У вас ещё нет сохранённых рецептов 🙁</string>
+    <string name="alert_title_error">Пу-пу-пууу!</string>
+    <string name="alert_title_warning">Предупреждение</string>
+    <string name="alert_title_info">Сообщение</string>
+    <string name="alert_button_ok">Ок</string>
+    <string name="alert_button_yes">Да</string>
+    <string name="alert_button_cancel">Отмена</string>
+    <string name="alert_description_try_again">Что-то пошло не так.\nПопробуй ещё раз</string>
+    <string name="alert_description_no_saved_recipes">У вас ещё нет сохранённых рецептов 🙁</string>
     <string name="error_invalid_flour_input">⚠️ Укажи вес муки</string>
     <string name="error_invalid_water_input">⚠️ Укажи вес воды</string>
     <string name="error_invalid_salt_input">⚠️ Укажи вес соли</string>
@@ -41,7 +42,7 @@
     <string name="error_invalid_sugar_percent">Не расчитан % сахара</string>
     <string name="error_invalid_butter_percent">Не расчитан % масла</string>
     <string name="error_alert_salt_invalid_range">⚠️ допустимая норма превышена (не более 2,5%)</string>
-    <string name="alert_water_valid_range">⚠️ допустимый диапазон: 60–80%</string>
+    <string name="alert_water_valid_range">⚠️ рекомендуемая норма: 60–80%</string>
     <string name="alert_save_empty_data">🚫 Не заполнены пропорции рецепта.</string>
     <string name="delete_confirm_title">Удаление рецепта</string>
     <string name="recipe_delete_confirm_message">⚠️ Точно хотите удалить рецепт\n\"%1$s\"?</string>

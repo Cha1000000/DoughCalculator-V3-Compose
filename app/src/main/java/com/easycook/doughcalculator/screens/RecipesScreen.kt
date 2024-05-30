@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 //noinspection UsingMaterialAndMaterial3Libraries
@@ -210,12 +209,12 @@ fun ShowConfirmDialog(
                 },
                 confirmButton = {
                     TextButton(onClick = onConfirm) {
-                        Text(text = stringResource(R.string.error_alert_ok_button_yes))
+                        Text(text = stringResource(R.string.alert_button_yes), fontSize = 16.sp)
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { dialogState.value = false }) {
-                        Text(text = stringResource(R.string.error_alert_ok_button_cancel))
+                        Text(text = stringResource(R.string.alert_button_cancel), fontSize = 16.sp)
                     }
                 },
             )
@@ -228,7 +227,7 @@ fun AddRecipeButton(navController: NavHostController, viewModel: RecipeViewModel
     FloatingActionButton(
         modifier = Modifier.padding(vertical = 8.dp),
         onClick = {
-            viewModel.recipeEntity = null
+            viewModel.recipeEntity = DoughRecipeEntity()
             navController.navigate(CALCULATION_SCREEN) {
                 launchSingleTop = true
             }
