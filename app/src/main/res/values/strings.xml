@@ -41,8 +41,8 @@
     <string name="error_invalid_salt_percent">Не расчитан % соли</string>
     <string name="error_invalid_sugar_percent">Не расчитан % сахара</string>
     <string name="error_invalid_butter_percent">Не расчитан % масла</string>
-    <string name="error_alert_salt_invalid_range">⚠️ допустимая норма превышена (не более 2,5%)</string>
-    <string name="alert_water_valid_range">⚠️ рекомендуемая норма: 60–80%</string>
+    <string name="validation_salt_invalid_range">❗️допустимая норма - не более 2,5%</string>
+    <string name="validation_water_range_recommended">⚠️ рекомендуемая норма: 60–80%</string>
     <string name="alert_save_empty_data">🚫 Не заполнены пропорции рецепта.</string>
     <string name="delete_confirm_title">Удаление рецепта</string>
     <string name="recipe_delete_confirm_message">⚠️ Точно хотите удалить рецепт\n\"%1$s\"?</string>

@@ -58,5 +58,6 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
             isSaltEmpty.value = true
             return@launch
         }
+
     }
 }

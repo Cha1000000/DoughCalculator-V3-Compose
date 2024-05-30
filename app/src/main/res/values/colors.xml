@@ -21,4 +21,5 @@
 
     <color name="edit_text_color">#574038</color>
     <color name="hint_text_color">#8D6E63</color>
+    <color name="validation_text_color">#87511B</color>
 </resources>

@@ -1,5 +1,6 @@
 package com.easycook.doughcalculator.screens
 
+//noinspection UsingMaterialAndMaterial3Libraries
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -16,7 +17,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -48,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -64,6 +65,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.easycook.doughcalculator.R
+import com.easycook.doughcalculator.R.color.dark_gray
+import com.easycook.doughcalculator.R.color.light_gray
+import com.easycook.doughcalculator.R.color.orange_700
+import com.easycook.doughcalculator.R.color.text_orange
+import com.easycook.doughcalculator.R.color.text_red
+import com.easycook.doughcalculator.R.color.validation_text_color
 import com.easycook.doughcalculator.RecipeViewModel
 import com.easycook.doughcalculator.database.DoughRecipeEntity
 import com.easycook.doughcalculator.models.IngredientUiItemModel
@@ -298,7 +305,15 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             items(tableRowsState.value) { row ->
-                IngredientRow(row, isCalculateByWeight, recipe)
+                Column {
+                    IngredientRow(row, isCalculateByWeight, recipe)
+                    if (row.name == stringResource(R.string.water) && showWaterValidationWarn.value) {
+                        ValidationRow(R.string.validation_water_range_recommended, false)
+                    }
+                    if (row.name == stringResource(R.string.salt) && showSaltValidationError.value) {
+                        ValidationRow(R.string.validation_salt_invalid_range, true)
+                    }
+                }
             }
         }
         Box(modifier = Modifier.fillMaxSize()) {
@@ -410,7 +425,7 @@ fun CalculateByWeightOrPercentTableRow(isCalculateByWeight: MutableState<Boolean
                 .align(Alignment.CenterVertically),
             style = typography.titleMedium,
             fontSize = 20.sp,
-            color = colorResource(R.color.text_orange)
+            color = colorResource(text_orange)
         )
         RadioButton(
             selected = isCalculateByWeight.value,
@@ -418,9 +433,9 @@ fun CalculateByWeightOrPercentTableRow(isCalculateByWeight: MutableState<Boolean
             modifier = Modifier.weight(1f),
             colors = RadioButtonColors(
                 selectedColor = colorScheme.primary,
-                unselectedColor = colorResource(R.color.text_orange),
-                disabledSelectedColor = colorResource(R.color.light_gray),
-                disabledUnselectedColor = colorResource(R.color.light_gray)
+                unselectedColor = colorResource(text_orange),
+                disabledSelectedColor = colorResource(light_gray),
+                disabledUnselectedColor = colorResource(light_gray)
             )
         )
         RadioButton(
@@ -429,9 +444,9 @@ fun CalculateByWeightOrPercentTableRow(isCalculateByWeight: MutableState<Boolean
             modifier = Modifier.weight(1f),
             colors = RadioButtonColors(
                 selectedColor = colorScheme.primary,
-                unselectedColor = colorResource(R.color.text_orange),
-                disabledSelectedColor = colorResource(R.color.light_gray),
-                disabledUnselectedColor = colorResource(R.color.light_gray)
+                unselectedColor = colorResource(text_orange),
+                disabledSelectedColor = colorResource(light_gray),
+                disabledUnselectedColor = colorResource(light_gray)
             )
         )
         Box(modifier = Modifier.weight(1f))
@@ -543,22 +558,38 @@ fun ValueInput(
             .copy(imeAction = ImeAction.Next),
         singleLine = true,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedTextColor = colorResource(R.color.orange_700),
-            disabledTextColor = colorResource(R.color.dark_gray),
-            focusedContainerColor = colorResource(R.color.light_gray),
-            unfocusedContainerColor = colorResource(R.color.light_gray),
-            disabledContainerColor = if (isEnabled) colorResource(R.color.light_gray) else Color.Transparent,
-            cursorColor = colorResource(R.color.text_orange),
+            focusedTextColor = colorResource(orange_700),
+            disabledTextColor = colorResource(dark_gray),
+            focusedContainerColor = colorResource(light_gray),
+            unfocusedContainerColor = colorResource(light_gray),
+            disabledContainerColor = if (isEnabled) colorResource(light_gray) else Transparent,
+            cursorColor = colorResource(text_orange),
             selectionColors = LocalTextSelectionColors.current,
-            focusedBorderColor = colorResource(R.color.text_orange),
-            unfocusedBorderColor = colorResource(R.color.light_gray),
-            disabledBorderColor = if (isEnabled) colorResource(R.color.light_gray) else Color.Transparent,
-            errorTextColor = colorResource(R.color.text_red),
-            errorContainerColor = Color.Transparent,
-            errorCursorColor = colorResource(R.color.text_red),
-            errorBorderColor = colorResource(R.color.text_red),
+            focusedBorderColor = colorResource(text_orange),
+            unfocusedBorderColor = colorResource(light_gray),
+            disabledBorderColor = if (isEnabled) colorResource(light_gray) else Transparent,
+            errorTextColor = colorResource(text_red),
+            errorContainerColor = Transparent,
+            errorCursorColor = colorResource(text_red),
+            errorBorderColor = colorResource(text_red),
         )
     )
+}
+
+@Composable
+fun ValidationRow(validationTextResId: Int, isBlocking: Boolean) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 0.dp),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = stringResource(validationTextResId),
+            color = if (isBlocking) colorResource(text_red) else colorResource(validation_text_color),
+            fontSize = 16.sp
+        )
+    }
 }
 
 @Composable
