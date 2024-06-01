@@ -1,6 +1,5 @@
 package com.easycook.doughcalculator.screens
 
-//noinspection UsingMaterialAndMaterial3Libraries
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -8,15 +7,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -199,9 +202,6 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
             quantity = if (isNewRecipe) "" else recipe.flourGram.toString(),
             percent = "100",
             correction = if (isNewRecipe || recipe.flourGramCorrection == 0) "" else recipe.flourGramCorrection.toString(),
-            isQuantityEditable = isCalculateByWeight.value,
-            isPercentsEditable = false,
-            isCorrectionEditable = isCalculateByWeight.value
         ),
         // Вода
         IngredientUiItemModel(
@@ -209,8 +209,6 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
             quantity = if (isNewRecipe) "" else recipe.waterGram.toString(),
             percent = if (isNewRecipe) "" else String.format("%.0f", recipe.waterPercent),
             correction = if (isNewRecipe || recipe.waterGramCorrection == 0) "" else recipe.waterGramCorrection.toString(),
-            isQuantityEditable = isCalculateByWeight.value,
-            isPercentsEditable = !isCalculateByWeight.value,
         ),
         // Соль
         IngredientUiItemModel(
@@ -218,8 +216,6 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
             quantity = if (isNewRecipe) "" else recipe.saltGram.toString(),
             percent = if (isNewRecipe) "" else String.format("%.0f", recipe.saltPercent),
             correction = if (isNewRecipe || recipe.saltGramCorrection == 0) "" else recipe.saltGramCorrection.toString(),
-            isQuantityEditable = isCalculateByWeight.value,
-            isPercentsEditable = !isCalculateByWeight.value,
         ),
         // Сахар
         IngredientUiItemModel(
@@ -230,8 +226,6 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
                 recipe.sugarPercent
             ),
             correction = if (isNewRecipe || recipe.sugarGramCorrection == 0) "" else recipe.sugarGramCorrection.toString(),
-            isQuantityEditable = isCalculateByWeight.value,
-            isPercentsEditable = !isCalculateByWeight.value,
         ),
         // Масло
         IngredientUiItemModel(
@@ -242,8 +236,6 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
                 recipe.butterPercent
             ),
             correction = if (isNewRecipe || recipe.butterGramCorrection == 0) "" else recipe.butterGramCorrection.toString(),
-            isQuantityEditable = isCalculateByWeight.value,
-            isPercentsEditable = !isCalculateByWeight.value,
         ),
         // Яйцо
         IngredientUiItemModel(
@@ -254,8 +246,6 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
                 recipe.eggPercent
             ),
             correction = if (isNewRecipe || recipe.eggGramCorrection == 0) "" else recipe.eggGramCorrection.toString(),
-            isQuantityEditable = isCalculateByWeight.value,
-            isPercentsEditable = !isCalculateByWeight.value,
         ),
         // Дрожжи
         IngredientUiItemModel(
@@ -266,8 +256,6 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
                 recipe.yeastPercent
             ),
             correction = if (isNewRecipe || recipe.yeastGramCorrection == 0) "" else recipe.yeastGramCorrection.toString(),
-            isQuantityEditable = isCalculateByWeight.value,
-            isPercentsEditable = !isCalculateByWeight.value,
         ),
         // Молоко
         IngredientUiItemModel(
@@ -278,8 +266,6 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
                 recipe.milkPercent
             ),
             correction = if (isNewRecipe || recipe.milkGramCorrection == 0) "" else recipe.milkGramCorrection.toString(),
-            isQuantityEditable = isCalculateByWeight.value,
-            isPercentsEditable = !isCalculateByWeight.value,
         ),
     )
     val tableRowsState = rememberSaveable { mutableStateOf(tableRows) }
@@ -300,7 +286,7 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(1),
             modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(4.dp),
+            //contentPadding = PaddingValues(4.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
@@ -321,6 +307,7 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
                 onClick = {
                     viewModel.onCalculationClicked(
                         /*recipe,*/
+                        isCalculateByWeight = isCalculateByWeight.value,
                         isFlourEmpty = showEmptyFlourError,
                         isWaterEmpty = showEmptyWaterError,
                         isSaltEmpty = showEmptySaltError,
@@ -380,7 +367,7 @@ fun TableTitle() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 6.dp, vertical = 2.dp),
+            .padding(horizontal = 6.dp, vertical = 0.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
@@ -403,7 +390,7 @@ fun TableTitle() {
         Text(
             text = stringResource(R.string.title_correction),
             modifier = Modifier.weight(1f),
-            textAlign = TextAlign.End,
+            textAlign = TextAlign.Start,
             fontSize = 20.sp,
             style = typography.titleMedium
         )
@@ -414,8 +401,9 @@ fun TableTitle() {
 fun CalculateByWeightOrPercentTableRow(isCalculateByWeight: MutableState<Boolean>) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 6.dp, vertical = 0.dp),
+            .fillMaxWidth().wrapContentHeight()
+            .padding(horizontal = 6.dp, vertical = 0.dp)
+            .offset(y = (-8).dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
@@ -516,7 +504,7 @@ fun IngredientRow(
         ValueInput(
             modifier = Modifier.weight(1f),
             inputValue = quantity,
-            isEnabled = isCalculateByWeight.value,
+            isEnabled = if (ingredient.name == stringResource(R.string.flour)) true else isCalculateByWeight.value,
             isWeight = true
         )
         ValueInput(
@@ -528,7 +516,7 @@ fun IngredientRow(
         ValueInput(
             modifier = Modifier.weight(1f),
             inputValue = correction,
-            isEnabled = isCalculateByWeight.value,
+            isEnabled = ingredient.name == stringResource(R.string.flour) && isCalculateByWeight.value,
             isWeight = true
         )
     }

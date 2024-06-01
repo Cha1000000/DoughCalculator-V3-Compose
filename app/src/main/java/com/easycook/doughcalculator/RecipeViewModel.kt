@@ -35,9 +35,9 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
         database.dao.delete(recipe)
     }
 
-    // TODO: попробовать заменить флаги на saled class, или на состояния (research MVI)
     fun onCalculationClicked(
         /*recipe: DoughRecipeEntity,*/
+        isCalculateByWeight: Boolean,
         isFlourEmpty: MutableState<Boolean>,
         isWaterEmpty: MutableState<Boolean>,
         isSaltEmpty: MutableState<Boolean>,
@@ -45,7 +45,6 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
         isSaltValidationError: MutableState<Boolean>,
         //isError: MutableState<Boolean>
     ) = viewModelScope.launch(Dispatchers.IO) {
-
         if (recipeEntity.flourGram == 0) {
             isFlourEmpty.value = true
             return@launch

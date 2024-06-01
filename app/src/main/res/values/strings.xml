@@ -16,7 +16,7 @@
     <string name="title_ingredient">Состав</string>
     <string name="title_grams">Вес (гр.)</string>
     <string name="title_percent">%</string>
-    <string name="title_correction">Изменить</string>
+    <string name="title_correction">Изменить вес (гр.)</string>
     <string name="title_calculate_by">Считать по</string>
     <string name="hint_zero">0</string>
     <string name="flour_const_percent">100</string>
