@@ -2,6 +2,7 @@ package com.easycook.doughcalculator.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.material.MaterialTheme.colors
 //noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -75,6 +77,8 @@ import com.easycook.doughcalculator.R.color.text_orange
 import com.easycook.doughcalculator.R.color.text_red
 import com.easycook.doughcalculator.R.color.validation_text_color
 import com.easycook.doughcalculator.RecipeViewModel
+import com.easycook.doughcalculator.common.formatToStringOrBlank
+import com.easycook.doughcalculator.common.toStringOrBlank
 import com.easycook.doughcalculator.database.DoughRecipeEntity
 import com.easycook.doughcalculator.models.IngredientUiItemModel
 
@@ -199,76 +203,116 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
         // Мука
         IngredientUiItemModel(
             name = stringResource(id = R.string.flour),
-            quantity = if (isNewRecipe) "" else recipe.flourGram.toString(),
-            percent = "100",
-            correction = if (isNewRecipe || recipe.flourGramCorrection == 0) "" else recipe.flourGramCorrection.toString(),
+            quantity = rememberSaveable { mutableStateOf(if (isNewRecipe) "" else recipe.flourGram.toString()) },
+            percent = rememberSaveable { mutableStateOf("100") },
+            correction = rememberSaveable {
+                mutableStateOf(if (isNewRecipe || recipe.flourGramCorrection == 0) "" else recipe.flourGramCorrection.toString())
+            },
         ),
         // Вода
         IngredientUiItemModel(
             name = stringResource(id = R.string.water),
-            quantity = if (isNewRecipe) "" else recipe.waterGram.toString(),
-            percent = if (isNewRecipe) "" else String.format("%.0f", recipe.waterPercent),
-            correction = if (isNewRecipe || recipe.waterGramCorrection == 0) "" else recipe.waterGramCorrection.toString(),
+            quantity = rememberSaveable { mutableStateOf(if (isNewRecipe) "" else recipe.waterGram.toString()) },
+            percent = rememberSaveable {
+                mutableStateOf(if (isNewRecipe) "" else String.format("%.0f", recipe.waterPercent))
+            },
+            correction = rememberSaveable {
+                mutableStateOf(if (isNewRecipe || recipe.waterGramCorrection == 0) "" else recipe.waterGramCorrection.toString())
+            },
         ),
         // Соль
         IngredientUiItemModel(
             name = stringResource(id = R.string.salt),
-            quantity = if (isNewRecipe) "" else recipe.saltGram.toString(),
-            percent = if (isNewRecipe) "" else String.format("%.0f", recipe.saltPercent),
-            correction = if (isNewRecipe || recipe.saltGramCorrection == 0) "" else recipe.saltGramCorrection.toString(),
+            quantity = rememberSaveable { mutableStateOf(if (isNewRecipe) "" else recipe.saltGram.toString()) },
+            percent = rememberSaveable {
+                mutableStateOf(if (isNewRecipe) "" else String.format("%.0f", recipe.saltPercent))
+            },
+            correction = rememberSaveable {
+                mutableStateOf(if (isNewRecipe || recipe.saltGramCorrection == 0) "" else recipe.saltGramCorrection.toString())
+            },
         ),
         // Сахар
         IngredientUiItemModel(
             name = stringResource(id = R.string.sugar),
-            quantity = if (isNewRecipe || recipe.sugarGram == 0) "" else recipe.sugarGram.toString(),
-            percent = if (isNewRecipe || recipe.sugarPercent == 0.0) "" else String.format(
-                "%.0f",
-                recipe.sugarPercent
-            ),
-            correction = if (isNewRecipe || recipe.sugarGramCorrection == 0) "" else recipe.sugarGramCorrection.toString(),
+            quantity = rememberSaveable { mutableStateOf(if (isNewRecipe || recipe.sugarGram == 0) "" else recipe.sugarGram.toString()) },
+            percent = rememberSaveable {
+                mutableStateOf(
+                    if (isNewRecipe || recipe.sugarPercent == 0.0) "" else String.format(
+                        "%.0f",
+                        recipe.sugarPercent
+                    )
+                )
+            },
+            correction = rememberSaveable {
+                mutableStateOf(if (isNewRecipe || recipe.sugarGramCorrection == 0) "" else recipe.sugarGramCorrection.toString())
+            },
         ),
         // Масло
         IngredientUiItemModel(
             name = stringResource(id = R.string.butter),
-            quantity = if (isNewRecipe || recipe.butterGram == 0) "" else recipe.butterGram.toString(),
-            percent = if (isNewRecipe || recipe.butterPercent == 0.0) "" else String.format(
-                "%.0f",
-                recipe.butterPercent
-            ),
-            correction = if (isNewRecipe || recipe.butterGramCorrection == 0) "" else recipe.butterGramCorrection.toString(),
-        ),
-        // Яйцо
-        IngredientUiItemModel(
-            name = stringResource(id = R.string.egg),
-            quantity = if (isNewRecipe || recipe.eggGram == 0) "" else recipe.eggGram.toString(),
-            percent = if (isNewRecipe || recipe.eggPercent == 0.0) "" else String.format(
-                "%.0f",
-                recipe.eggPercent
-            ),
-            correction = if (isNewRecipe || recipe.eggGramCorrection == 0) "" else recipe.eggGramCorrection.toString(),
+            quantity = rememberSaveable { mutableStateOf(if (isNewRecipe || recipe.butterGram == 0) "" else recipe.butterGram.toString()) },
+            percent = rememberSaveable {
+                mutableStateOf(
+                    if (isNewRecipe || recipe.butterPercent == 0.0) "" else String.format(
+                        "%.0f",
+                        recipe.butterPercent
+                    )
+                )
+            },
+            correction = rememberSaveable {
+                mutableStateOf(if (isNewRecipe || recipe.butterGramCorrection == 0) "" else recipe.butterGramCorrection.toString())
+            },
         ),
         // Дрожжи
         IngredientUiItemModel(
             name = stringResource(id = R.string.yeast),
-            quantity = if (isNewRecipe || recipe.yeastGram == 0) "" else recipe.yeastGram.toString(),
-            percent = if (isNewRecipe || recipe.yeastPercent == 0.0) "" else String.format(
-                "%.0f",
-                recipe.yeastPercent
-            ),
-            correction = if (isNewRecipe || recipe.yeastGramCorrection == 0) "" else recipe.yeastGramCorrection.toString(),
+            quantity = rememberSaveable { mutableStateOf(if (isNewRecipe || recipe.yeastGram == 0) "" else recipe.yeastGram.toString()) },
+            percent = rememberSaveable {
+                mutableStateOf(
+                    if (isNewRecipe || recipe.yeastPercent == 0.0) "" else String.format(
+                        "%.0f",
+                        recipe.yeastPercent
+                    )
+                )
+            },
+            correction = rememberSaveable {
+                mutableStateOf(if (isNewRecipe || recipe.yeastGramCorrection == 0) "" else recipe.yeastGramCorrection.toString())
+            },
         ),
         // Молоко
         IngredientUiItemModel(
             name = stringResource(id = R.string.milk),
-            quantity = if (isNewRecipe || recipe.milkGram == 0) "" else recipe.milkGram.toString(),
-            percent = if (isNewRecipe || recipe.milkPercent == 0.0) "" else String.format(
-                "%.0f",
-                recipe.milkPercent
-            ),
-            correction = if (isNewRecipe || recipe.milkGramCorrection == 0) "" else recipe.milkGramCorrection.toString(),
+            quantity = rememberSaveable { mutableStateOf(if (isNewRecipe || recipe.milkGram == 0) "" else recipe.milkGram.toString()) },
+            percent = rememberSaveable {
+                mutableStateOf(
+                    if (isNewRecipe || recipe.milkPercent == 0.0) "" else String.format(
+                        "%.0f",
+                        recipe.milkPercent
+                    )
+                )
+            },
+            correction = rememberSaveable {
+                mutableStateOf(if (isNewRecipe || recipe.milkGramCorrection == 0) "" else recipe.milkGramCorrection.toString())
+            },
+        ),
+        // Яйцо
+        IngredientUiItemModel(
+            name = stringResource(id = R.string.egg),
+            quantity = rememberSaveable { mutableStateOf(if (isNewRecipe || recipe.eggGram == 0) "" else recipe.eggGram.toString()) },
+            percent = rememberSaveable {
+                mutableStateOf(
+                    if (isNewRecipe || recipe.eggPercent == 0.0) "" else String.format(
+                        "%.0f",
+                        recipe.eggPercent
+                    )
+                )
+            },
+            correction = rememberSaveable {
+                mutableStateOf(if (isNewRecipe || recipe.eggGramCorrection == 0) "" else recipe.eggGramCorrection.toString())
+            },
         ),
     )
-    val tableRowsState = rememberSaveable { mutableStateOf(tableRows) }
+    //val tableRowsState = rememberSaveable { mutableStateOf(tableRows) }
     Column(modifier = Modifier.fillMaxSize()) {
         if (!isNewRecipe) {
             Text(
@@ -290,7 +334,7 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            items(tableRowsState.value) { row ->
+            items(tableRows) { row ->
                 Column {
                     IngredientRow(row, isCalculateByWeight, recipe)
                     if (row.name == stringResource(R.string.water) && showWaterValidationWarn.value) {
@@ -314,6 +358,7 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
                         isWaterValidationWarning = showWaterValidationWarn,
                         isSaltValidationError = showSaltValidationError
                     )
+                    tableValuesRefresh(tableRows, recipe)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -362,6 +407,25 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
     }
 }
 
+private fun tableValuesRefresh(
+    tableRows: List<IngredientUiItemModel>,
+    recipe: DoughRecipeEntity
+) {
+    val ingredients = listOf(
+        recipe.waterPercent to recipe.waterGramCorrection,
+        recipe.saltPercent to recipe.saltGramCorrection,
+        recipe.sugarPercent to recipe.sugarGramCorrection,
+        recipe.butterPercent to recipe.butterGramCorrection,
+        recipe.yeastPercent to recipe.yeastGramCorrection,
+        recipe.milkPercent to recipe.milkGramCorrection,
+        recipe.eggPercent to recipe.eggGramCorrection
+    )
+    ingredients.forEachIndexed { index, (percent, correction) ->
+        tableRows[index + 1].percent.value = percent.formatToStringOrBlank()
+        tableRows[index + 1].correction.value = correction.toStringOrBlank()
+    }
+}
+
 @Composable
 fun TableTitle() {
     Row(
@@ -401,7 +465,8 @@ fun TableTitle() {
 fun CalculateByWeightOrPercentTableRow(isCalculateByWeight: MutableState<Boolean>) {
     Row(
         modifier = Modifier
-            .fillMaxWidth().wrapContentHeight()
+            .fillMaxWidth()
+            .wrapContentHeight()
             .padding(horizontal = 6.dp, vertical = 0.dp)
             .offset(y = (-8).dp),
         horizontalArrangement = Arrangement.SpaceBetween
@@ -447,45 +512,42 @@ fun IngredientRow(
     isCalculateByWeight: MutableState<Boolean>,
     recipe: DoughRecipeEntity
 ) {
-    val quantity = rememberSaveable { mutableStateOf(ingredient.quantity) }
-    val percent = rememberSaveable { mutableStateOf(ingredient.percent) }
-    val correction = rememberSaveable { mutableStateOf(ingredient.correction) }
-    LaunchedEffect(quantity.value) {
-        val gram = if (quantity.value == "") 0 else quantity.value.toInt()
+    LaunchedEffect(ingredient.quantity.value) {
+        val gram = if (ingredient.quantity.value == "") 0 else ingredient.quantity.value.toInt()
         when (ingredient.name) {
             "Мука" -> recipe.flourGram = gram
             "Вода" -> recipe.waterGram = gram
             "Соль" -> recipe.saltGram = gram
             "Сахар" -> recipe.sugarGram = gram
             "Масло" -> recipe.butterGram = gram
-            "Яйцо" -> recipe.eggGram = gram
             "Дрожжи" -> recipe.yeastGram = gram
             "Молоко" -> recipe.milkGram = gram
+            "Яйцо" -> recipe.eggGram = gram
         }
     }
-    LaunchedEffect(percent.value) {
-        val prc = if (percent.value == "") 0.0 else percent.value.toDouble()
+    LaunchedEffect(ingredient.percent.value) {
+        val prc = if (ingredient.percent.value == "") 0.0 else ingredient.percent.value.toDouble()
         when (ingredient.name) {
             "Вода" -> recipe.waterPercent = prc
             "Соль" -> recipe.saltPercent = prc
             "Сахар" -> recipe.sugarPercent = prc
             "Масло" -> recipe.butterPercent = prc
-            "Яйцо" -> recipe.eggPercent = prc
             "Дрожжи" -> recipe.yeastPercent = prc
             "Молоко" -> recipe.milkPercent = prc
+            "Яйцо" -> recipe.eggPercent = prc
         }
     }
-    LaunchedEffect(correction.value) {
-        val cor = if (correction.value == "") 0 else correction.value.toInt()
+    LaunchedEffect(ingredient.correction.value) {
+        val cor = if (ingredient.correction.value == "") 0 else ingredient.correction.value.toInt()
         when (ingredient.name) {
             "Мука" -> recipe.flourGramCorrection = cor
             "Вода" -> recipe.waterGramCorrection = cor
             "Соль" -> recipe.saltGramCorrection = cor
             "Сахар" -> recipe.sugarGramCorrection = cor
             "Масло" -> recipe.butterGramCorrection = cor
-            "Яйцо" -> recipe.eggGramCorrection = cor
             "Дрожжи" -> recipe.yeastGramCorrection = cor
             "Молоко" -> recipe.milkGramCorrection = cor
+            "Яйцо" -> recipe.eggGramCorrection = cor
         }
     }
     Row(
@@ -503,19 +565,19 @@ fun IngredientRow(
         )
         ValueInput(
             modifier = Modifier.weight(1f),
-            inputValue = quantity,
+            inputValue = ingredient.quantity,
             isEnabled = if (ingredient.name == stringResource(R.string.flour)) true else isCalculateByWeight.value,
             isWeight = true
         )
         ValueInput(
             modifier = Modifier.weight(0.8f),
-            inputValue = percent,
+            inputValue = ingredient.percent,
             isEnabled = if (ingredient.name == stringResource(R.string.flour)) false else !isCalculateByWeight.value,
             isWeight = false
         )
         ValueInput(
             modifier = Modifier.weight(1f),
-            inputValue = correction,
+            inputValue = ingredient.correction,
             isEnabled = ingredient.name == stringResource(R.string.flour) && isCalculateByWeight.value,
             isWeight = true
         )
@@ -533,7 +595,7 @@ fun ValueInput(
     OutlinedTextField(
         value = inputValue.value,
         onValueChange = { newText ->
-            inputValue.value = newText.take(maxLength)
+            inputValue.value = newText.filter { it.isDigit() }.take(maxLength)
         },
         modifier = modifier,
         enabled = isEnabled,
@@ -594,14 +656,16 @@ fun ShowAlertDialog(
         title = {
             Text(
                 color = colorScheme.tertiary,
-                text = if (titleId != null) stringResource(titleId) else title ?: stringResource(R.string.alert_title_info),
+                text = if (titleId != null) stringResource(titleId) else title
+                    ?: stringResource(R.string.alert_title_info),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
         },
         text = {
             Text(
-                text = if (messageId != null) stringResource(messageId) else message ?: stringResource(R.string.alert_description_try_again),
+                text = if (messageId != null) stringResource(messageId) else message
+                    ?: stringResource(R.string.alert_description_try_again),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium
             )
