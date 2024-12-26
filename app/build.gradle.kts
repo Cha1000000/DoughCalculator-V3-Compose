@@ -9,11 +9,12 @@ plugins {
 
 android {
     namespace = "com.easycook.doughcalculator"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.easycook.doughcalculator"
         minSdk = 27
+        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
         versionName = "3.0"
@@ -48,7 +49,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.9"
+        kotlinCompilerExtensionVersion = "1.5.14"
     }
     packaging {
         resources {
