@@ -2,13 +2,11 @@ package com.easycook.doughcalculator.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -20,7 +18,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
-import androidx.compose.material.MaterialTheme.colors
 //noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -72,11 +69,13 @@ import androidx.navigation.NavHostController
 import com.easycook.doughcalculator.R
 import com.easycook.doughcalculator.R.color.dark_gray
 import com.easycook.doughcalculator.R.color.light_gray
-import com.easycook.doughcalculator.R.color.orange_700
+import com.easycook.doughcalculator.R.color.orange_900
 import com.easycook.doughcalculator.R.color.text_orange
 import com.easycook.doughcalculator.R.color.text_red
 import com.easycook.doughcalculator.R.color.validation_text_color
 import com.easycook.doughcalculator.RecipeViewModel
+import com.easycook.doughcalculator.common.CALCULATION_SCREEN
+import com.easycook.doughcalculator.common.SAVE_RECIPE_SCREEN
 import com.easycook.doughcalculator.common.formatToStringOrBlank
 import com.easycook.doughcalculator.common.toStringOrBlank
 import com.easycook.doughcalculator.database.DoughRecipeEntity
@@ -162,6 +161,7 @@ fun CalculationScreen(
                                 },
                                 onClick = {
                                     menuExpanded = false
+                                    navController.navigate(SAVE_RECIPE_SCREEN)
                                 },
                             )
                         }
@@ -319,17 +319,18 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
                 text = recipe.title,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 4.dp, vertical = 12.dp),
+                    .padding(horizontal = 4.dp, vertical = 8.dp),
                 fontSize = 28.sp,
                 fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = colorResource(orange_900)
             )
         }
         TableTitle()
         CalculateByWeightOrPercentTableRow(isCalculateByWeight)
         LazyVerticalGrid(
             columns = GridCells.Fixed(1),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
             //contentPadding = PaddingValues(4.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -346,10 +347,19 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
                 }
             }
         }
+        if (!isNewRecipe) {
+            Text(
+                text = recipe.description,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 8.dp),
+                style = typography.bodyLarge,
+            )
+        }
         Box(modifier = Modifier.fillMaxSize()) {
             Button(
                 onClick = {
-                    viewModel.onCalculationClicked(
+                    viewModel.onCalculationClick(
                         /*recipe,*/
                         isCalculateByWeight = isCalculateByWeight.value,
                         isFlourEmpty = showEmptyFlourError,
@@ -431,7 +441,7 @@ fun TableTitle() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 6.dp, vertical = 0.dp),
+            .padding(8.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
@@ -467,7 +477,7 @@ fun CalculateByWeightOrPercentTableRow(isCalculateByWeight: MutableState<Boolean
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(horizontal = 6.dp, vertical = 0.dp)
+            .padding(horizontal = 8.dp, vertical = 0.dp)
             .offset(y = (-8).dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -608,14 +618,14 @@ fun ValueInput(
             .copy(imeAction = ImeAction.Next),
         singleLine = true,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedTextColor = colorResource(orange_700),
+            focusedTextColor = colorResource(orange_900),
             disabledTextColor = colorResource(dark_gray),
             focusedContainerColor = colorResource(light_gray),
             unfocusedContainerColor = colorResource(light_gray),
             disabledContainerColor = if (isEnabled) colorResource(light_gray) else Transparent,
-            cursorColor = colorResource(text_orange),
+            cursorColor = colorResource(orange_900),
             selectionColors = LocalTextSelectionColors.current,
-            focusedBorderColor = colorResource(text_orange),
+            focusedBorderColor = colorResource(orange_900),
             unfocusedBorderColor = colorResource(light_gray),
             disabledBorderColor = if (isEnabled) colorResource(light_gray) else Transparent,
             errorTextColor = colorResource(text_red),

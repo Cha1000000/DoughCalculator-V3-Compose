@@ -13,6 +13,7 @@
     <string name="egg">Яйцо</string>
     <string name="yeast">Дрожжи</string>
     <string name="milk">Молоко</string>
+
     <string name="title_ingredient">Состав</string>
     <string name="title_grams">Вес (гр.)</string>
     <string name="title_percent">%</string>
@@ -20,6 +21,7 @@
     <string name="title_calculate_by">Считать по</string>
     <string name="hint_zero">0</string>
     <string name="flour_const_percent">100</string>
+
     <string name="recipe_title">Название</string>
     <string name="text_field_description">Описание</string>
 
@@ -49,7 +51,7 @@
     <string name="recipe_create_confirm_message">⚠️ Изменения не сохранены.\nХотите начать заполнение нового рецепта? 🤔</string>
 
     <string name="menu_item_new">Новый рецепт</string>
-    <string name="menu_item_open">Открыть рецепт</string>
+    <string name="menu_item_open">Мои рецепты</string>
     <string name="menu_item_save">Сохранить рецепт</string>
 
     <string name="unknown_exception_title">Неизвестная ошибка</string>

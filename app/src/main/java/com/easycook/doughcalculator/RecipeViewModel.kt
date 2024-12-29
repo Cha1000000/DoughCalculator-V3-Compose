@@ -7,19 +7,33 @@ import com.easycook.doughcalculator.database.DoughRecipeEntity
 import com.easycook.doughcalculator.database.DoughRecipesDatabase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RecipeViewModel @Inject constructor(private val database: DoughRecipesDatabase) :
-    ViewModel() {
-
-    val recipes = database.dao.getAllRecipes()
+class RecipeViewModel @Inject constructor(private val database: DoughRecipesDatabase): ViewModel() {
 
     //var recipeEntity: DoughRecipeEntity? = null
     var recipeEntity: DoughRecipeEntity = DoughRecipeEntity()
 
-    fun insertRecipe(recipe: DoughRecipeEntity) = viewModelScope.launch(Dispatchers.IO) {
+    private val _recipes = MutableStateFlow<List<DoughRecipeEntity>>(emptyList())
+    val recipes: StateFlow<List<DoughRecipeEntity>> = _recipes.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            database.dao.getAllRecipes().collect { recipes ->
+                _recipes.value = recipes
+            }
+        }
+    }
+
+    private fun insertRecipe(recipe: DoughRecipeEntity) = viewModelScope.launch(Dispatchers.IO) {
         database.dao.insert(recipe)
     }
 
@@ -31,7 +45,7 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
         database.dao.delete(recipe)
     }
 
-    fun onCalculationClicked(
+    fun onCalculationClick(
         /*recipe: DoughRecipeEntity,*/
         isCalculateByWeight: Boolean,
         isFlourEmpty: MutableState<Boolean>,
@@ -183,5 +197,18 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
 
     private fun recalculateIngredientGram(percent: Double, newFlourWeight: Int): Int {
         return (newFlourWeight * percent / 100.00).toInt()
+    }
+
+    fun onSaveClick(title: String, description: String) {
+        if (title.isEmpty()) return
+        val recipe = recipeEntity.copy(title = title, description = description)
+        viewModelScope.launch {
+            insertRecipe(recipe)
+            database.dao.getAllRecipes().collectLatest { updatedRecipes ->
+                _recipes.value = updatedRecipes
+                recipeEntity = updatedRecipes.last()
+                println("${recipeEntity.title} with ID= ${recipeEntity.recipeId}")
+            }
+        }
     }
 }
