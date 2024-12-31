@@ -1,26 +1,38 @@
 package com.easycook.doughcalculator
 
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.easycook.doughcalculator.database.DoughRecipeEntity
 import com.easycook.doughcalculator.database.DoughRecipesDatabase
+import com.easycook.doughcalculator.models.IngredientUiItemModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
-class RecipeViewModel @Inject constructor(private val database: DoughRecipesDatabase): ViewModel() {
+class RecipeViewModel @Inject constructor(private val database: DoughRecipesDatabase) :
+    ViewModel() {
 
-    //var recipeEntity: DoughRecipeEntity? = null
-    var recipeEntity: DoughRecipeEntity = DoughRecipeEntity()
+    var recipeEntity by mutableStateOf(DoughRecipeEntity())
+
+    val isCalculateByWeight = mutableStateOf(true)
+    val isFlourEmpty = mutableStateOf(false)
+    val isSaltEmpty = mutableStateOf(false)
+    val isWaterEmpty = mutableStateOf(false)
+    val isWaterValidationWarn = mutableStateOf(false)
+    val isSaltValidationError = mutableStateOf(false)
+    private val _tableIngredientRows = mutableStateOf(createIngredientTableRows())
+    val tableIngredientRows: List<IngredientUiItemModel> get() = _tableIngredientRows.value
 
     private val _recipes = MutableStateFlow<List<DoughRecipeEntity>>(emptyList())
     val recipes: StateFlow<List<DoughRecipeEntity>> = _recipes.asStateFlow()
@@ -45,14 +57,100 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
         database.dao.delete(recipe)
     }
 
+    fun resetRecipe() {
+        recipeEntity = DoughRecipeEntity()
+    }
+
+    fun refreshIngredientTableRows() {
+        _tableIngredientRows.value = createIngredientTableRows()
+    }
+
+    private fun createIngredientTableRows(): List<IngredientUiItemModel> {
+        val recipe = recipeEntity
+        val isNewRecipe = recipeEntity.recipeId == null
+        return listOf(
+            IngredientUiItemModel(
+                name = "Мука",
+                quantity = mutableStateOf(if (isNewRecipe) "" else recipe.flourGram.toString()),
+                percent = mutableStateOf("100"),
+                correction = mutableStateOf(
+                    if (isNewRecipe || recipe.flourGramCorrection == 0) "" else recipe.flourGramCorrection.toString()
+                )
+            ),
+            IngredientUiItemModel(
+                name = "Вода",
+                quantity = mutableStateOf(if (isNewRecipe) "" else recipe.waterGram.toString()),
+                percent = mutableStateOf(
+                    if (isNewRecipe) "" else String.format(Locale.getDefault(), "%.0f", recipe.waterPercent)
+                ),
+                correction = mutableStateOf(
+                    if (isNewRecipe || recipe.waterGramCorrection == 0) "" else recipe.waterGramCorrection.toString()
+                ),
+            ),
+            IngredientUiItemModel(
+                name = "Соль",
+                quantity = mutableStateOf(if (isNewRecipe) "" else recipe.saltGram.toString()),
+                percent = mutableStateOf(
+                    if (isNewRecipe) "" else String.format(Locale.getDefault(), "%.0f", recipe.saltPercent)
+                ),
+                correction = mutableStateOf(
+                    if (isNewRecipe || recipe.saltGramCorrection == 0) "" else recipe.saltGramCorrection.toString()
+                ),
+            ),
+            IngredientUiItemModel(
+                name = "Сахар",
+                quantity = mutableStateOf(if (isNewRecipe) "" else recipe.sugarGram.toString()),
+                percent = mutableStateOf(
+                    if (isNewRecipe) "" else String.format(Locale.getDefault(), "%.0f", recipe.sugarPercent)
+                ),
+                correction = mutableStateOf(
+                    if (isNewRecipe || recipe.sugarGramCorrection == 0) "" else recipe.sugarGramCorrection.toString()
+                ),
+            ),
+            IngredientUiItemModel(
+                name = "Масло",
+                quantity = mutableStateOf(if (isNewRecipe) "" else recipe.butterGram.toString()),
+                percent = mutableStateOf(
+                    if (isNewRecipe) "" else String.format(Locale.getDefault(), "%.0f", recipe.butterPercent)
+                ),
+                correction = mutableStateOf(
+                    if (isNewRecipe || recipe.butterGramCorrection == 0) "" else recipe.butterGramCorrection.toString()
+                ),
+            ),
+            IngredientUiItemModel(
+                name = "Дрожжи",
+                quantity = mutableStateOf(if (isNewRecipe) "" else recipe.yeastGram.toString()),
+                percent = mutableStateOf(
+                    if (isNewRecipe) "" else String.format(Locale.getDefault(), "%.0f", recipe.yeastPercent)
+                ),
+                correction = mutableStateOf(
+                    if (isNewRecipe || recipe.yeastGramCorrection == 0) "" else recipe.yeastGramCorrection.toString()
+                ),
+            ),
+            IngredientUiItemModel(
+                name = "Молоко",
+                quantity = mutableStateOf(if (isNewRecipe) "" else recipe.milkGram.toString()),
+                percent = mutableStateOf(
+                    if (isNewRecipe) "" else String.format(Locale.getDefault(), "%.0f", recipe.milkPercent)
+                ),
+                correction = mutableStateOf(
+                    if (isNewRecipe || recipe.milkGramCorrection == 0) "" else recipe.milkGramCorrection.toString()
+                ),
+            ),
+            IngredientUiItemModel(
+                name = "Яйца",
+                quantity = mutableStateOf(if (isNewRecipe) "" else recipe.eggGram.toString()),
+                percent = mutableStateOf(
+                    if (isNewRecipe) "" else String.format(Locale.getDefault(), "%.0f", recipe.eggPercent)
+                ),
+                correction = mutableStateOf(
+                    if (isNewRecipe || recipe.eggGramCorrection == 0) "" else recipe.eggGramCorrection.toString()
+                ),
+            ),
+        )
+    }
+
     fun onCalculationClick(
-        /*recipe: DoughRecipeEntity,*/
-        isCalculateByWeight: Boolean,
-        isFlourEmpty: MutableState<Boolean>,
-        isWaterEmpty: MutableState<Boolean>,
-        isSaltEmpty: MutableState<Boolean>,
-        isWaterValidationWarning: MutableState<Boolean>,
-        isSaltValidationError: MutableState<Boolean>,
         //isError: MutableState<Boolean>
     ) {
         if (recipeEntity.flourGram == 0) {
@@ -68,8 +166,8 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
             return
         }
 
-        if (isCalculateByWeight) {
-            calculateWaterPercent(isWaterValidationWarning)
+        if (isCalculateByWeight.value) {
+            calculateWaterPercent(isWaterValidationWarn)
             calculateSaltPercent(isSaltValidationError)
             calculateSugarPercent()
             calculateButterPercent()
