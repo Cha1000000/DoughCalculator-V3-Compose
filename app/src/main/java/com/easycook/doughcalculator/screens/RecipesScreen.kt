@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 //noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.AlertDialog
-import androidx.compose.material3.FloatingActionButton
 //noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -25,6 +24,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -69,7 +69,9 @@ fun RecipesScreen(
             TopAppBar(
                 title = {
                     Text(
+                        modifier = Modifier.fillMaxWidth(),
                         text = stringResource(id = R.string.screen_title_open_recipe),
+                        textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.titleLarge,
                     )
                 },
@@ -78,7 +80,6 @@ fun RecipesScreen(
         },
         floatingActionButton = { AddRecipeButton(navController, viewModel) }
     ) { paddingValues ->
-        //val state = rememberLazyListState()
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -95,7 +96,6 @@ fun RecipesScreen(
                     .fillMaxSize()
                     .padding(start = 24.dp, top = 18.dp, end = 12.dp, bottom = 20.dp),
                 horizontalAlignment = CenterHorizontally,
-                //state = state,
             ) {
                 itemsIndexed(
                     items = recipes.value,
