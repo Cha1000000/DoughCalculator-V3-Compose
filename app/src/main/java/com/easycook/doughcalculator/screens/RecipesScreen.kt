@@ -128,7 +128,7 @@ fun RecipeItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         onClick = {
             viewModel.recipeEntity = item
-            viewModel.refreshIngredientTableRows()
+            viewModel.resetIngredientTableRows()
             navController.navigate(CALCULATION_SCREEN) {
                 launchSingleTop = true
             }
@@ -229,7 +229,7 @@ fun AddRecipeButton(navController: NavHostController, viewModel: RecipeViewModel
         modifier = Modifier.padding(vertical = 8.dp),
         onClick = {
             viewModel.resetRecipe()
-            viewModel.refreshIngredientTableRows()
+            viewModel.resetIngredientTableRows()
             navController.navigate(CALCULATION_SCREEN) {
                 launchSingleTop = true
             }

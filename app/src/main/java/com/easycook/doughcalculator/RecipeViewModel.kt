@@ -5,6 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.easycook.doughcalculator.common.formatToStringOrBlank
+import com.easycook.doughcalculator.common.toStringOrBlank
 import com.easycook.doughcalculator.database.DoughRecipeEntity
 import com.easycook.doughcalculator.database.DoughRecipesDatabase
 import com.easycook.doughcalculator.models.IngredientType
@@ -32,6 +34,7 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
     val isWaterEmpty = mutableStateOf(false)
     val isWaterValidationWarn = mutableStateOf(false)
     val isSaltValidationError = mutableStateOf(false)
+
     private val _tableIngredientRows = mutableStateOf(createIngredientTableRows())
     val tableIngredientRows: List<IngredientUiItemModel> get() = _tableIngredientRows.value
 
@@ -58,7 +61,7 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
         recipeEntity = DoughRecipeEntity()
     }
 
-    fun refreshIngredientTableRows() {
+    fun resetIngredientTableRows() {
         _tableIngredientRows.value = createIngredientTableRows()
     }
 
@@ -145,6 +148,33 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
                 ),
             ),
         )
+    }
+
+    fun updateIngredientTableRows() {
+        val recipe = recipeEntity
+        val newRows = listOf(
+            Triple(recipe.waterGram, recipe.waterPercent, recipe.waterGramCorrection),
+            Triple(recipe.saltGram, recipe.saltPercent, recipe.saltGramCorrection),
+            Triple(recipe.sugarGram, recipe.sugarPercent, recipe.sugarGramCorrection),
+            Triple(recipe.butterGram, recipe.butterPercent, recipe.butterGramCorrection),
+            Triple(recipe.yeastGram, recipe.yeastPercent, recipe.yeastGramCorrection),
+            Triple(recipe.milkGram, recipe.milkPercent, recipe.milkGramCorrection),
+            Triple(recipe.eggGram, recipe.eggPercent, recipe.eggGramCorrection),
+        ).mapIndexed { index, (gram, percent, correction) ->
+            val oldRow = _tableIngredientRows.value[index + 1]
+            oldRow.copy(
+                quantity = mutableStateOf(gram.toStringOrBlank()),
+                percent = mutableStateOf(percent.formatToStringOrBlank()),
+                correction = mutableStateOf(correction.toStringOrBlank()),
+            )
+        }
+        _tableIngredientRows.value = _tableIngredientRows.value
+            .toMutableList()
+            .apply {
+                for (i in newRows.indices) {
+                    this[i + 1] = newRows[i]
+                }
+            }
     }
 
     fun onCalculationClick() {

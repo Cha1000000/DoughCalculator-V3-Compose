@@ -73,8 +73,6 @@ import com.easycook.doughcalculator.R.color.text_red
 import com.easycook.doughcalculator.R.color.validation_text_color
 import com.easycook.doughcalculator.RecipeViewModel
 import com.easycook.doughcalculator.common.SAVE_RECIPE_SCREEN
-import com.easycook.doughcalculator.common.formatToStringOrBlank
-import com.easycook.doughcalculator.common.toStringOrBlank
 import com.easycook.doughcalculator.database.DoughRecipeEntity
 import com.easycook.doughcalculator.models.IngredientType
 import com.easycook.doughcalculator.models.IngredientUiItemModel
@@ -129,7 +127,7 @@ fun CalculationScreen(
                                 onClick = {
                                     menuExpanded = false
                                     viewModel.resetRecipe()
-                                    viewModel.refreshIngredientTableRows()
+                                    viewModel.resetIngredientTableRows()
                                 },
                             )
                             DropdownMenuItem(
@@ -251,7 +249,7 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
                     if (showEmptyWaterError.value || showEmptyFlourError.value || showEmptySaltError.value) {
                         return@Button
                     }
-                    tableValuesUpdate(tableRows, recipe)
+                    viewModel.updateIngredientTableRows()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -305,27 +303,6 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
                 }
             )
         }
-    }
-}
-
-private fun tableValuesUpdate(
-    tableRows: List<IngredientUiItemModel>,
-    recipe: DoughRecipeEntity
-) {
-    val ingredients = listOf(
-        Triple(recipe.waterGram, recipe.waterPercent, recipe.waterGramCorrection),
-        Triple(recipe.saltGram, recipe.saltPercent, recipe.saltGramCorrection),
-        Triple(recipe.sugarGram, recipe.sugarPercent, recipe.sugarGramCorrection),
-        Triple(recipe.butterGram, recipe.butterPercent, recipe.butterGramCorrection),
-        Triple(recipe.yeastGram, recipe.yeastPercent, recipe.yeastGramCorrection),
-        Triple(recipe.milkGram, recipe.milkPercent, recipe.milkGramCorrection),
-        Triple(recipe.eggGram, recipe.eggPercent, recipe.eggGramCorrection),
-    )
-
-    ingredients.forEachIndexed { index, (gram, percent, correction) ->
-        tableRows[index + 1].quantity.value = gram.toStringOrBlank()
-        tableRows[index + 1].percent.value = percent.formatToStringOrBlank()
-        tableRows[index + 1].correction.value = correction.toStringOrBlank()
     }
 }
 
