@@ -76,6 +76,7 @@ import com.easycook.doughcalculator.common.SAVE_RECIPE_SCREEN
 import com.easycook.doughcalculator.common.formatToStringOrBlank
 import com.easycook.doughcalculator.common.toStringOrBlank
 import com.easycook.doughcalculator.database.DoughRecipeEntity
+import com.easycook.doughcalculator.models.IngredientType
 import com.easycook.doughcalculator.models.IngredientUiItemModel
 
 @Composable
@@ -222,13 +223,13 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            items(tableRows, key = { it.name }) { row ->
+            items(tableRows, key = { it.ingredient }) { row ->
                 Column {
                     IngredientRow(row, isCalculateByWeight, recipe)
-                    if (row.name == stringResource(R.string.water) && showWaterValidationWarn.value) {
+                    if (row.ingredient == IngredientType.Water && showWaterValidationWarn.value) {
                         ValidationRow(R.string.validation_water_range_recommended, false)
                     }
-                    if (row.name == stringResource(R.string.salt) && showSaltValidationError.value) {
+                    if (row.ingredient == IngredientType.Salt && showSaltValidationError.value) {
                         ValidationRow(R.string.validation_salt_invalid_range, true)
                     }
                 }
@@ -410,88 +411,49 @@ fun CalculateByWeightOrPercentTableRow(isCalculateByWeight: MutableState<Boolean
 
 @Composable
 fun IngredientRow(
-    ingredient: IngredientUiItemModel,
+    ingredientItem: IngredientUiItemModel,
     isCalculateByWeight: MutableState<Boolean>,
     recipe: DoughRecipeEntity
 ) {
-    /*LaunchedEffect(ingredient.quantity.value) {
-        val gram = if (ingredient.quantity.value == "") 0 else ingredient.quantity.value.toInt()
-        when (ingredient.name) {
-            "Мука" -> recipe.flourGram = gram
-            "Вода" -> recipe.waterGram = gram
-            "Соль" -> recipe.saltGram = gram
-            "Сахар" -> recipe.sugarGram = gram
-            "Масло" -> recipe.butterGram = gram
-            "Дрожжи" -> recipe.yeastGram = gram
-            "Молоко" -> recipe.milkGram = gram
-            "Яйцо" -> recipe.eggGram = gram
-        }
-    }
-    LaunchedEffect(ingredient.percent.value) {
-        val prc = if (ingredient.percent.value == "") 0.0 else ingredient.percent.value.toDouble()
-        when (ingredient.name) {
-            "Вода" -> recipe.waterPercent = prc
-            "Соль" -> recipe.saltPercent = prc
-            "Сахар" -> recipe.sugarPercent = prc
-            "Масло" -> recipe.butterPercent = prc
-            "Дрожжи" -> recipe.yeastPercent = prc
-            "Молоко" -> recipe.milkPercent = prc
-            "Яйцо" -> recipe.eggPercent = prc
-        }
-    }
-    LaunchedEffect(ingredient.correction.value) {
-        val cor = if (ingredient.correction.value == "") 0 else ingredient.correction.value.toInt()
-        when (ingredient.name) {
-            "Мука" -> recipe.flourGramCorrection = cor
-            "Вода" -> recipe.waterGramCorrection = cor
-            "Соль" -> recipe.saltGramCorrection = cor
-            "Сахар" -> recipe.sugarGramCorrection = cor
-            "Масло" -> recipe.butterGramCorrection = cor
-            "Дрожжи" -> recipe.yeastGramCorrection = cor
-            "Молоко" -> recipe.milkGramCorrection = cor
-            "Яйцо" -> recipe.eggGramCorrection = cor
-        }
-    }*/
-
-    val gram = if (ingredient.quantity.value == "") 0 else ingredient.quantity.value.toInt()
-    val prc = if (ingredient.percent.value == "") 0.0 else ingredient.percent.value.toDouble()
-    val cor = if (ingredient.correction.value == "") 0 else ingredient.correction.value.toInt()
-    when (ingredient.name) {
-        stringResource(R.string.flour) -> {
+    val gram = if (ingredientItem.quantity.value == "") 0 else ingredientItem.quantity.value.toInt()
+    val prc = if (ingredientItem.percent.value == "") 0.0 else ingredientItem.percent.value.toDouble()
+    val cor = if (ingredientItem.correction.value == "") 0 else ingredientItem.correction.value.toInt()
+    when (ingredientItem.ingredient) {
+        IngredientType.Flour -> {
             recipe.flourGram = gram
             recipe.flourGramCorrection = cor
         }
-        stringResource(R.string.water) -> {
+        IngredientType.Water -> {
             recipe.waterGram = gram
             recipe.waterPercent = prc
             recipe.waterGramCorrection = cor
         }
-        stringResource(R.string.salt) -> {
+        IngredientType.Salt -> {
             recipe.saltGram = gram
             recipe.saltPercent = prc
             recipe.saltGramCorrection = cor
         }
-        stringResource(R.string.sugar) -> {
+        IngredientType.Sugar -> {
             recipe.sugarGram = gram
             recipe.sugarPercent = prc
             recipe.sugarGramCorrection = cor
         }
-        stringResource(R.string.butter) -> {
+        IngredientType.Butter -> {
             recipe.butterGram = gram
             recipe.butterPercent = prc
             recipe.butterGramCorrection = cor
         }
-        stringResource(R.string.yeast) -> {
+        IngredientType.Yeast -> {
             recipe.yeastGram = gram
             recipe.yeastPercent = prc
             recipe.yeastGramCorrection = cor
         }
-        stringResource(R.string.milk) -> {
+        IngredientType.Milk -> {
             recipe.milkGram = gram
             recipe.milkPercent = prc
             recipe.milkGramCorrection = cor
         }
-        stringResource(R.string.egg) -> {
+        IngredientType.Egg -> {
             recipe.eggGram = gram
             recipe.eggPercent = prc
             recipe.eggGramCorrection = cor
@@ -505,7 +467,7 @@ fun IngredientRow(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text = ingredient.name,
+            text = stringResource(ingredientItem.ingredient.title),
             modifier = Modifier
                 .weight(1.25f)
                 .align(Alignment.CenterVertically),
@@ -513,20 +475,20 @@ fun IngredientRow(
         )
         ValueInput(
             modifier = Modifier.weight(1f),
-            inputValue = ingredient.quantity,
-            isEnabled = if (ingredient.name == stringResource(R.string.flour)) true else isCalculateByWeight.value,
+            inputValue = ingredientItem.quantity,
+            isEnabled = if (ingredientItem.ingredient == IngredientType.Flour) true else isCalculateByWeight.value,
             isWeight = true
         )
         ValueInput(
             modifier = Modifier.weight(0.8f),
-            inputValue = ingredient.percent,
-            isEnabled = if (ingredient.name == stringResource(R.string.flour)) false else !isCalculateByWeight.value,
+            inputValue = ingredientItem.percent,
+            isEnabled = if (ingredientItem.ingredient == IngredientType.Flour) false else !isCalculateByWeight.value,
             isWeight = false
         )
         ValueInput(
             modifier = Modifier.weight(1f),
-            inputValue = ingredient.correction,
-            isEnabled = ingredient.name == stringResource(R.string.flour) && isCalculateByWeight.value,
+            inputValue = ingredientItem.correction,
+            isEnabled = ingredientItem.ingredient == IngredientType.Flour && isCalculateByWeight.value,
             isWeight = true
         )
     }

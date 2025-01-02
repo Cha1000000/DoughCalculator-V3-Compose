@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.easycook.doughcalculator.database.DoughRecipeEntity
 import com.easycook.doughcalculator.database.DoughRecipesDatabase
+import com.easycook.doughcalculator.models.IngredientType
 import com.easycook.doughcalculator.models.IngredientUiItemModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -66,7 +67,7 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
         val isNewRecipe = recipeEntity.recipeId == null
         return listOf(
             IngredientUiItemModel(
-                name = "Мука",
+                ingredient = IngredientType.Flour,
                 quantity = mutableStateOf(if (isNewRecipe) "" else recipe.flourGram.toString()),
                 percent = mutableStateOf("100"),
                 correction = mutableStateOf(
@@ -74,7 +75,7 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
                 )
             ),
             IngredientUiItemModel(
-                name = "Вода",
+                ingredient = IngredientType.Water,
                 quantity = mutableStateOf(if (isNewRecipe) "" else recipe.waterGram.toString()),
                 percent = mutableStateOf(
                     if (isNewRecipe) "" else String.format(Locale.getDefault(), "%.0f", recipe.waterPercent)
@@ -84,7 +85,7 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
                 ),
             ),
             IngredientUiItemModel(
-                name = "Соль",
+                ingredient = IngredientType.Salt,
                 quantity = mutableStateOf(if (isNewRecipe) "" else recipe.saltGram.toString()),
                 percent = mutableStateOf(
                     if (isNewRecipe) "" else String.format(Locale.getDefault(), "%.0f", recipe.saltPercent)
@@ -94,7 +95,7 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
                 ),
             ),
             IngredientUiItemModel(
-                name = "Сахар",
+                ingredient = IngredientType.Sugar,
                 quantity = mutableStateOf(if (isNewRecipe) "" else recipe.sugarGram.toString()),
                 percent = mutableStateOf(
                     if (isNewRecipe) "" else String.format(Locale.getDefault(), "%.0f", recipe.sugarPercent)
@@ -104,7 +105,7 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
                 ),
             ),
             IngredientUiItemModel(
-                name = "Масло",
+                ingredient = IngredientType.Butter,
                 quantity = mutableStateOf(if (isNewRecipe) "" else recipe.butterGram.toString()),
                 percent = mutableStateOf(
                     if (isNewRecipe) "" else String.format(Locale.getDefault(), "%.0f", recipe.butterPercent)
@@ -114,7 +115,7 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
                 ),
             ),
             IngredientUiItemModel(
-                name = "Дрожжи",
+                ingredient = IngredientType.Yeast,
                 quantity = mutableStateOf(if (isNewRecipe) "" else recipe.yeastGram.toString()),
                 percent = mutableStateOf(
                     if (isNewRecipe) "" else String.format(Locale.getDefault(), "%.0f", recipe.yeastPercent)
@@ -124,7 +125,7 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
                 ),
             ),
             IngredientUiItemModel(
-                name = "Молоко",
+                ingredient = IngredientType.Milk,
                 quantity = mutableStateOf(if (isNewRecipe) "" else recipe.milkGram.toString()),
                 percent = mutableStateOf(
                     if (isNewRecipe) "" else String.format(Locale.getDefault(), "%.0f", recipe.milkPercent)
@@ -134,7 +135,7 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
                 ),
             ),
             IngredientUiItemModel(
-                name = "Яйцо",
+                ingredient = IngredientType.Egg,
                 quantity = mutableStateOf(if (isNewRecipe) "" else recipe.eggGram.toString()),
                 percent = mutableStateOf(
                     if (isNewRecipe) "" else String.format(Locale.getDefault(), "%.0f", recipe.eggPercent)
