@@ -10,10 +10,10 @@ import com.easycook.doughcalculator.database.DoughRecipesDatabase
 import com.easycook.doughcalculator.models.IngredientUiItemModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
@@ -43,10 +43,6 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
                 _recipes.value = recipes
             }
         }
-    }
-
-    private fun insertRecipe(recipe: DoughRecipeEntity) = viewModelScope.launch(Dispatchers.IO) {
-        database.dao.insert(recipe)
     }
 
     fun updateRecipe(recipe: DoughRecipeEntity) = viewModelScope.launch(Dispatchers.IO) {
@@ -138,7 +134,7 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
                 ),
             ),
             IngredientUiItemModel(
-                name = "Яйца",
+                name = "Яйцо",
                 quantity = mutableStateOf(if (isNewRecipe) "" else recipe.eggGram.toString()),
                 percent = mutableStateOf(
                     if (isNewRecipe) "" else String.format(Locale.getDefault(), "%.0f", recipe.eggPercent)
@@ -349,12 +345,13 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
     fun onSaveClick(title: String, description: String) {
         if (title.isEmpty()) return
         val recipe = recipeEntity.copy(title = title, description = description)
-        viewModelScope.launch {
-            insertRecipe(recipe)
-            database.dao.getAllRecipes().collectLatest { updatedRecipes ->
-                _recipes.value = updatedRecipes
+        viewModelScope.launch(Dispatchers.IO) {
+            database.dao.insert(recipe)
+            database.dao.getAllRecipes().collect { updatedRecipes ->
+                if (updatedRecipes.isEmpty()) return@collect
                 recipeEntity = updatedRecipes.last()
             }
+            cancel()
         }
     }
 }
