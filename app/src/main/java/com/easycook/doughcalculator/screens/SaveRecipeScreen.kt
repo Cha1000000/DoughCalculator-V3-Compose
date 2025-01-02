@@ -48,7 +48,6 @@ import com.easycook.doughcalculator.R.color.light_gray
 import com.easycook.doughcalculator.R.color.orange_900
 import com.easycook.doughcalculator.RecipeViewModel
 import com.easycook.doughcalculator.common.CALCULATION_SCREEN
-import com.easycook.doughcalculator.ui.theme.FontFamilyDefault
 
 @Composable
 fun SaveRecipeScreen(
@@ -94,7 +93,6 @@ fun SaveRecipeScreen(
                 modifier = Modifier.matchParentSize(),
                 contentScale = ContentScale.FillBounds
             )
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -107,8 +105,8 @@ fun SaveRecipeScreen(
                     label = {
                         Text(
                             stringResource(R.string.recipe_title),
-                            fontSize = 14.sp,
-                            fontFamily = FontFamilyDefault,
+                            style = typography.labelLarge,
+                            modifier = Modifier.padding(bottom = 6.dp),
                         )
                     },
                     textStyle = typography.bodyLarge,
@@ -135,8 +133,8 @@ fun SaveRecipeScreen(
                     label = {
                         Text(
                             stringResource(R.string.text_field_description),
-                            fontSize = 14.sp,
-                            fontFamily = FontFamilyDefault,
+                            style = typography.labelLarge,
+                            modifier = Modifier.padding(bottom = 6.dp),
                         )
                     },
                     textStyle = typography.bodyLarge,
@@ -167,9 +165,11 @@ fun SaveRecipeScreen(
                     shape = RoundedCornerShape(20.dp)
                 ) {
                     Text(
+                        modifier = Modifier.padding(vertical = 6.dp),
                         text = stringResource(R.string.button_save_text),
                         style = typography.bodyLarge,
-                        fontSize = 20.sp,
+                        fontSize = 24.sp,
+                        letterSpacing = 2.sp
                     )
                 }
             }

@@ -76,6 +76,7 @@ import com.easycook.doughcalculator.common.SAVE_RECIPE_SCREEN
 import com.easycook.doughcalculator.database.DoughRecipeEntity
 import com.easycook.doughcalculator.models.IngredientType
 import com.easycook.doughcalculator.models.IngredientUiItemModel
+import com.easycook.doughcalculator.ui.theme.FontFamilyDefault
 
 @Composable
 fun CalculationScreen(
@@ -203,7 +204,7 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
                 text = recipe.title,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 4.dp, vertical = 8.dp),
+                    .padding(top = 12.dp, bottom = 6.dp),
                 fontSize = 28.sp,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
@@ -238,7 +239,7 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
                 text = recipe.description,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 8.dp),
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
                 style = typography.bodyLarge,
             )
         }
@@ -264,11 +265,10 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
             ) {
                 Text(
                     text = stringResource(id = R.string.button_calculate_text),
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically),
+                    modifier = Modifier.align(Alignment.CenterVertically),
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Medium,
-                    fontFamily = FontFamily(Font(R.font.halogen)),
+                    fontFamily = FontFamilyDefault,
                     letterSpacing = 4.sp
                 )
             }
