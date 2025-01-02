@@ -197,7 +197,6 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
     val showEmptyWaterError = viewModel.isWaterEmpty
     val showWaterValidationWarn = viewModel.isWaterValidationWarn
     val showSaltValidationError = viewModel.isSaltValidationError
-    val showErrorAlert = rememberSaveable { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         if (!isNewRecipe) {
@@ -280,21 +279,29 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
             ShowAlertDialog(
                 isOpen = showEmptyFlourError,
                 titleId = R.string.alert_title_error,
-                messageId = R.string.error_invalid_flour_input
+                messageId = R.string.error_invalid_flour_gram_input
             )
         }
         if (showEmptyWaterError.value) {
             ShowAlertDialog(
                 isOpen = showEmptyWaterError,
                 titleId = R.string.alert_title_error,
-                messageId = R.string.error_invalid_water_input
+                messageId = if (isCalculateByWeight.value) {
+                    R.string.error_invalid_water_gram_input
+                } else {
+                    R.string.error_invalid_water_percent_input
+                }
             )
         }
         if (showEmptySaltError.value) {
             ShowAlertDialog(
                 isOpen = showEmptySaltError,
                 titleId = R.string.alert_title_error,
-                messageId = R.string.error_invalid_salt_input
+                messageId = if (isCalculateByWeight.value) {
+                    R.string.error_invalid_salt_gram_input
+                } else {
+                    R.string.error_invalid_salt_percent_input
+                }
             )
         }
     }
@@ -305,15 +312,17 @@ private fun tableValuesUpdate(
     recipe: DoughRecipeEntity
 ) {
     val ingredients = listOf(
-        recipe.waterPercent to recipe.waterGramCorrection,
-        recipe.saltPercent to recipe.saltGramCorrection,
-        recipe.sugarPercent to recipe.sugarGramCorrection,
-        recipe.butterPercent to recipe.butterGramCorrection,
-        recipe.yeastPercent to recipe.yeastGramCorrection,
-        recipe.milkPercent to recipe.milkGramCorrection,
-        recipe.eggPercent to recipe.eggGramCorrection
+        Triple(recipe.waterGram, recipe.waterPercent, recipe.waterGramCorrection),
+        Triple(recipe.saltGram, recipe.saltPercent, recipe.saltGramCorrection),
+        Triple(recipe.sugarGram, recipe.sugarPercent, recipe.sugarGramCorrection),
+        Triple(recipe.butterGram, recipe.butterPercent, recipe.butterGramCorrection),
+        Triple(recipe.yeastGram, recipe.yeastPercent, recipe.yeastGramCorrection),
+        Triple(recipe.milkGram, recipe.milkPercent, recipe.milkGramCorrection),
+        Triple(recipe.eggGram, recipe.eggPercent, recipe.eggGramCorrection),
     )
-    ingredients.forEachIndexed { index, (percent, correction) ->
+
+    ingredients.forEachIndexed { index, (gram, percent, correction) ->
+        tableRows[index + 1].quantity.value = gram.toStringOrBlank()
         tableRows[index + 1].percent.value = percent.formatToStringOrBlank()
         tableRows[index + 1].correction.value = correction.toStringOrBlank()
     }

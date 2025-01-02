@@ -1,6 +1,5 @@
 package com.easycook.doughcalculator
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -18,6 +17,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @HiltViewModel
 class RecipeViewModel @Inject constructor(private val database: DoughRecipesDatabase) :
@@ -150,61 +150,60 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
         )
     }
 
-    fun onCalculationClick(
-        //isError: MutableState<Boolean>
-    ) {
+    fun onCalculationClick() {
         if (recipeEntity.flourGram == 0) {
             isFlourEmpty.value = true
             return
         }
-        if (recipeEntity.waterGram == 0) {
-            isWaterEmpty.value = true
-            return
-        }
-        if (recipeEntity.saltGram == 0) {
-            isSaltEmpty.value = true
-            return
-        }
 
         if (isCalculateByWeight.value) {
-            calculateWaterPercent(isWaterValidationWarn)
-            calculateSaltPercent(isSaltValidationError)
+            if (recipeEntity.waterGram == 0) {
+                isWaterEmpty.value = true
+                return
+            }
+            if (recipeEntity.saltGram == 0) {
+                isSaltEmpty.value = true
+                return
+            }
+
+            calculateWaterPercent()
+            calculateSaltPercent()
             calculateSugarPercent()
             calculateButterPercent()
-            calculateEggPercent()
             calculateYeastPercent()
             calculateMilkPercent()
-
-            if (recipeEntity.flourGramCorrection > 0) {
-                recalculateWaterGram()
-                recalculateSaltGram()
-                recalculateSugarGram()
-                recalculateButterGram()
-                recalculateEggGram()
-                recalculateYeastGram()
-                recalculateMilkGram()
-            } else {
-                if (recipeEntity.waterGramCorrection != 0) recipeEntity.waterGramCorrection = 0
-                if (recipeEntity.saltGramCorrection != 0) recipeEntity.saltGramCorrection = 0
-                if (recipeEntity.sugarGramCorrection != 0) recipeEntity.sugarGramCorrection = 0
-                if (recipeEntity.butterGramCorrection != 0) recipeEntity.butterGramCorrection = 0
-                if (recipeEntity.eggGramCorrection != 0) recipeEntity.eggGramCorrection = 0
-                if (recipeEntity.yeastGramCorrection != 0) recipeEntity.yeastGramCorrection = 0
-                if (recipeEntity.milkGramCorrection != 0) recipeEntity.milkGramCorrection = 0
-            }
+            calculateEggPercent()
         } else {
+            if (recipeEntity.waterPercent == 0.0) {
+                isWaterEmpty.value = true
+                return
+            }
+            if (recipeEntity.saltPercent == 0.0) {
+                isSaltEmpty.value = true
+                return
+            }
 
+            calculateWaterGram()
+            calculateSaltGram()
+            calculateSugarGram()
+            calculateButterGram()
+            calculateYeastGram()
+            calculateMilkGram()
+            calculateEggGram()
         }
-    }
 
-    private fun calculateWaterPercent(isWaterValidationWarning: MutableState<Boolean>) {
-        recipeEntity.waterPercent = calculateIngredientPercent(recipeEntity.waterGram)
-        isWaterValidationWarning.value = recipeEntity.waterPercent !in 59.5..80.0
-    }
+        recalculateGrams()
 
-    private fun calculateSaltPercent(isSaltValidationError: MutableState<Boolean>) {
-        recipeEntity.saltPercent = calculateIngredientPercent(recipeEntity.saltGram)
+        isWaterValidationWarn.value = recipeEntity.waterPercent !in 59.5..80.0
         isSaltValidationError.value = recipeEntity.saltPercent > 2.5
+    }
+
+    private fun calculateWaterPercent() {
+        recipeEntity.waterPercent = calculateIngredientPercent(recipeEntity.waterGram)
+    }
+
+    private fun calculateSaltPercent() {
+        recipeEntity.saltPercent = calculateIngredientPercent(recipeEntity.saltGram)
     }
 
     private fun calculateSugarPercent() {
@@ -247,8 +246,58 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
         recipeEntity.milkPercent = calculateIngredientPercent(recipeEntity.milkGram)
     }
 
-    private fun calculateIngredientPercent(gram: Int): Double {
-        return (gram * 100.00 / recipeEntity.flourGram)
+    private fun calculateIngredientPercent(gram: Int): Double =
+        gram * 100.00 / recipeEntity.flourGram
+
+    private fun calculateWaterGram() {
+        recipeEntity.waterGram = calculateIngredientGram(recipeEntity.waterPercent)
+    }
+
+    private fun calculateSaltGram() {
+        recipeEntity.saltGram = calculateIngredientGram(recipeEntity.saltPercent)
+    }
+
+    private fun calculateSugarGram() {
+        recipeEntity.sugarGram = calculateIngredientGram(recipeEntity.sugarPercent)
+    }
+
+    private fun calculateButterGram() {
+        recipeEntity.butterGram = calculateIngredientGram(recipeEntity.butterPercent)
+    }
+
+    private fun calculateEggGram() {
+        recipeEntity.eggGram = calculateIngredientGram(recipeEntity.eggPercent)
+    }
+
+    private fun calculateYeastGram() {
+        recipeEntity.yeastGram = calculateIngredientGram(recipeEntity.yeastPercent)
+    }
+
+    private fun calculateMilkGram() {
+        recipeEntity.milkGram = calculateIngredientGram(recipeEntity.milkPercent)
+    }
+
+    private fun calculateIngredientGram(prc: Double): Int =
+        (recipeEntity.flourGram * prc / 100).roundToInt()
+
+    private fun recalculateGrams() {
+        if (recipeEntity.flourGramCorrection > 0) {
+            recalculateWaterGram()
+            recalculateSaltGram()
+            recalculateSugarGram()
+            recalculateButterGram()
+            recalculateEggGram()
+            recalculateYeastGram()
+            recalculateMilkGram()
+        } else {
+            if (recipeEntity.waterGramCorrection != 0) recipeEntity.waterGramCorrection = 0
+            if (recipeEntity.saltGramCorrection != 0) recipeEntity.saltGramCorrection = 0
+            if (recipeEntity.sugarGramCorrection != 0) recipeEntity.sugarGramCorrection = 0
+            if (recipeEntity.butterGramCorrection != 0) recipeEntity.butterGramCorrection = 0
+            if (recipeEntity.eggGramCorrection != 0) recipeEntity.eggGramCorrection = 0
+            if (recipeEntity.yeastGramCorrection != 0) recipeEntity.yeastGramCorrection = 0
+            if (recipeEntity.milkGramCorrection != 0) recipeEntity.milkGramCorrection = 0
+        }
     }
 
     private fun recalculateWaterGram() {
@@ -305,7 +354,6 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
             database.dao.getAllRecipes().collectLatest { updatedRecipes ->
                 _recipes.value = updatedRecipes
                 recipeEntity = updatedRecipes.last()
-                println("${recipeEntity.title} with ID= ${recipeEntity.recipeId}")
             }
         }
     }
