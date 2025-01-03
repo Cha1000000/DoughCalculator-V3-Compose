@@ -118,10 +118,14 @@ fun CalculationScreen(
                             onDismissRequest = { menuExpanded = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text(stringResource(id = R.string.menu_item_new)) },
+                                text = { Text(
+                                    text = stringResource(id = R.string.menu_item_new),
+                                    fontWeight = FontWeight.SemiBold,
+                                ) },
                                 leadingIcon = {
                                     Image(
                                         painter = painterResource(id = R.drawable.ic_create),
+                                        modifier = Modifier.padding(bottom = 6.dp),
                                         contentDescription = "New",
                                     )
                                 },
@@ -132,10 +136,14 @@ fun CalculationScreen(
                                 },
                             )
                             DropdownMenuItem(
-                                text = { Text(stringResource(id = R.string.menu_item_open)) },
+                                text = { Text(
+                                    stringResource(id = R.string.menu_item_open),
+                                    fontWeight = FontWeight.SemiBold,
+                                ) },
                                 leadingIcon = {
                                     Image(
-                                        painter = painterResource(id = R.drawable.ic_open),
+                                        painter = painterResource(id = R.drawable.ic_my_recipes),
+                                        modifier = Modifier.padding(bottom = 4.dp),
                                         contentDescription = "Open",
                                     )
                                 },
@@ -150,10 +158,14 @@ fun CalculationScreen(
                                 },
                             )
                             DropdownMenuItem(
-                                text = { Text(stringResource(id = R.string.menu_item_save)) },
+                                text = { Text(
+                                    stringResource(id = R.string.menu_item_save),
+                                    fontWeight = FontWeight.SemiBold,
+                                ) },
                                 leadingIcon = {
                                     Image(
                                         painter = painterResource(id = R.drawable.ic_save),
+                                        modifier = Modifier.padding(bottom = 6.dp),
                                         contentDescription = "Save",
                                     )
                                 },
