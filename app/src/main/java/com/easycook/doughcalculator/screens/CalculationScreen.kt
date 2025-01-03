@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -18,16 +19,16 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
-//noinspection UsingMaterialAndMaterial3Libraries
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -39,6 +40,7 @@ import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -78,6 +80,7 @@ import com.easycook.doughcalculator.models.IngredientType
 import com.easycook.doughcalculator.models.IngredientUiItemModel
 import com.easycook.doughcalculator.ui.theme.FontFamilyDefault
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalculationScreen(
     navController: NavHostController,
@@ -85,10 +88,13 @@ fun CalculationScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
+            CenterAlignedTopAppBar(
+                modifier = Modifier.height(50.dp),
                 title = {
                     Text(
+                        modifier = Modifier.fillMaxWidth().padding(top = 14.dp),
                         text = stringResource(id = R.string.screen_title_calculation),
+                        textAlign = TextAlign.Center,
                         style = typography.titleLarge,
                     )
                 },
@@ -177,7 +183,9 @@ fun CalculationScreen(
                         }
                     }
                 },
-                backgroundColor = colorScheme.primary,
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = colorScheme.primary,
+                )
             )
         },
     ) { paddingValues ->
@@ -557,7 +565,7 @@ fun ShowAlertDialog(
                 color = colorScheme.tertiary,
                 text = if (titleId != null) stringResource(titleId) else title
                     ?: stringResource(R.string.alert_title_info),
-                fontSize = 18.sp,
+                style = typography.labelLarge,
                 fontWeight = FontWeight.Bold
             )
         },
@@ -565,13 +573,13 @@ fun ShowAlertDialog(
             Text(
                 text = if (messageId != null) stringResource(messageId) else message
                     ?: stringResource(R.string.alert_description_try_again),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Medium
+                style = typography.labelLarge,
+                fontSize = 20.sp
             )
         },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text(text = stringResource(R.string.alert_button_ok), fontSize = 18.sp)
+                Text(text = stringResource(R.string.alert_button_ok), fontSize = 20.sp)
             }
         },
     )

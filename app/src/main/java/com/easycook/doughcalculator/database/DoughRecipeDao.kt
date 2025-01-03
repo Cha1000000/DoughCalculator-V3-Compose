@@ -23,9 +23,6 @@ interface DoughRecipeDao {
     @Query("SELECT * FROM dough_recipes_table WHERE recipeId = :id")
     fun getById(id: Long): DoughRecipeEntity
 
-    /*@Query("SELECT * FROM dough_recipes_table ORDER BY is_favorite DESC")
-    fun getAllRecipes(): List<DoughRecipeEntity>?*/
-
     @Query("SELECT * FROM dough_recipes_table ORDER BY is_favorite DESC")
     fun getAllRecipes(): Flow<List<DoughRecipeEntity>>
 

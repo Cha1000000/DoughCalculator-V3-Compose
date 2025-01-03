@@ -6,17 +6,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
-//noinspection UsingMaterialAndMaterial3Libraries
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -25,6 +26,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +42,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -49,6 +52,7 @@ import com.easycook.doughcalculator.R.color.orange_900
 import com.easycook.doughcalculator.RecipeViewModel
 import com.easycook.doughcalculator.common.CALCULATION_SCREEN
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SaveRecipeScreen(
     navController: NavHostController,
@@ -60,10 +64,13 @@ fun SaveRecipeScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            CenterAlignedTopAppBar(
+                modifier = Modifier.height(50.dp),
                 title = {
                     Text(
-                        stringResource(R.string.screen_title_save_recipe),
+                        modifier = Modifier.fillMaxWidth().padding(top = 14.dp),
+                        text = stringResource(R.string.screen_title_save_recipe),
+                        textAlign = TextAlign.Center,
                         style = typography.titleLarge,
                     )
                 },
@@ -78,7 +85,9 @@ fun SaveRecipeScreen(
                         )
                     }
                 },
-                backgroundColor = colorScheme.primary,
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = colorScheme.primary,
+                )
             )
         },
     ) { paddingValues ->

@@ -41,10 +41,6 @@
     <string name="error_invalid_salt_gram_input">⚠️ Укажи вес соли</string>
     <string name="error_invalid_water_percent_input">⚠️ Укажи процент воды</string>
     <string name="error_invalid_salt_percent_input">⚠️ Укажи процент соли</string>
-    <string name="error_invalid_water_percent">Не расчитан % воды</string>
-    <string name="error_invalid_salt_percent">Не расчитан % соли</string>
-    <string name="error_invalid_sugar_percent">Не расчитан % сахара</string>
-    <string name="error_invalid_butter_percent">Не расчитан % масла</string>
     <string name="validation_salt_invalid_range">❗️допустимая норма - не более 2,5%</string>
     <string name="validation_water_range_recommended">⚠️ рекомендуемая норма: 60–80%</string>
     <string name="alert_save_empty_data">🚫 Не заполнены пропорции рецепта.</string>
