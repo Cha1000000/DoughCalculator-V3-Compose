@@ -17,7 +17,7 @@ android {
         //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
-        versionName = "3.0"
+        versionName = "3.1"
         archivesName = "DoughCalculator v$versionName"
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
