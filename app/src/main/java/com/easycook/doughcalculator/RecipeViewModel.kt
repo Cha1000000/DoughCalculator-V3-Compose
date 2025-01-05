@@ -3,6 +3,8 @@ package com.easycook.doughcalculator
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.easycook.doughcalculator.common.formatToStringOrBlank
@@ -68,89 +70,165 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
     private fun createIngredientTableRows(): List<IngredientUiItemModel> {
         val recipe = recipeEntity
         val isNewRecipe = recipeEntity.recipeId == null
+
         return listOf(
             IngredientUiItemModel(
                 ingredient = IngredientType.Flour,
-                quantity = mutableStateOf(if (isNewRecipe) "" else recipe.flourGram.toString()),
-                percent = mutableStateOf("100"),
+                quantity = mutableStateOf(toTextFieldValue(if (isNewRecipe) "" else recipe.flourGram.toString())),
+                percent = mutableStateOf(TextFieldValue("100", TextRange(3))), // "100"
                 correction = mutableStateOf(
-                    if (isNewRecipe || recipe.flourGramCorrection == 0) "" else recipe.flourGramCorrection.toString()
+                    toTextFieldValue(
+                        if (isNewRecipe || recipe.flourGramCorrection == 0)
+                            ""
+                        else
+                            recipe.flourGramCorrection.toString()
+                    )
                 )
             ),
             IngredientUiItemModel(
                 ingredient = IngredientType.Water,
-                quantity = mutableStateOf(if (isNewRecipe) "" else recipe.waterGram.toString()),
+                quantity = mutableStateOf(toTextFieldValue(if (isNewRecipe) "" else recipe.waterGram.toString())),
                 percent = mutableStateOf(
-                    if (isNewRecipe) "" else String.format(Locale.getDefault(), "%.0f", recipe.waterPercent)
+                    toTextFieldValue(
+                        if (isNewRecipe)
+                            ""
+                        else
+                            String.format(Locale.getDefault(), "%.0f", recipe.waterPercent)
+                    )
                 ),
                 correction = mutableStateOf(
-                    if (isNewRecipe || recipe.waterGramCorrection == 0) "" else recipe.waterGramCorrection.toString()
+                    toTextFieldValue(
+                        if (isNewRecipe || recipe.waterGramCorrection == 0)
+                            ""
+                        else
+                            recipe.waterGramCorrection.toString()
+                    )
                 ),
             ),
             IngredientUiItemModel(
                 ingredient = IngredientType.Salt,
-                quantity = mutableStateOf(if (isNewRecipe) "" else recipe.saltGram.toString()),
+                quantity = mutableStateOf(toTextFieldValue(if (isNewRecipe) "" else recipe.saltGram.toString())),
                 percent = mutableStateOf(
-                    if (isNewRecipe) "" else String.format(Locale.getDefault(), "%.0f", recipe.saltPercent)
+                    toTextFieldValue(
+                        if (isNewRecipe)
+                            ""
+                        else
+                            String.format(Locale.getDefault(), "%.0f", recipe.saltPercent)
+                    )
                 ),
                 correction = mutableStateOf(
-                    if (isNewRecipe || recipe.saltGramCorrection == 0) "" else recipe.saltGramCorrection.toString()
+                    toTextFieldValue(
+                        if (isNewRecipe || recipe.saltGramCorrection == 0)
+                            ""
+                        else
+                            recipe.saltGramCorrection.toString()
+                    )
                 ),
             ),
             IngredientUiItemModel(
                 ingredient = IngredientType.Sugar,
-                quantity = mutableStateOf(if (isNewRecipe) "" else recipe.sugarGram.toString()),
+                quantity = mutableStateOf(toTextFieldValue(if (isNewRecipe) "" else recipe.sugarGram.toString())),
                 percent = mutableStateOf(
-                    if (isNewRecipe) "" else String.format(Locale.getDefault(), "%.0f", recipe.sugarPercent)
+                    toTextFieldValue(
+                        if (isNewRecipe)
+                            ""
+                        else
+                            String.format(Locale.getDefault(), "%.0f", recipe.sugarPercent)
+                    )
                 ),
                 correction = mutableStateOf(
-                    if (isNewRecipe || recipe.sugarGramCorrection == 0) "" else recipe.sugarGramCorrection.toString()
+                    toTextFieldValue(
+                        if (isNewRecipe || recipe.sugarGramCorrection == 0)
+                            ""
+                        else
+                            recipe.sugarGramCorrection.toString()
+                    )
                 ),
             ),
             IngredientUiItemModel(
                 ingredient = IngredientType.Butter,
-                quantity = mutableStateOf(if (isNewRecipe) "" else recipe.butterGram.toString()),
+                quantity = mutableStateOf(toTextFieldValue(if (isNewRecipe) "" else recipe.butterGram.toString())),
                 percent = mutableStateOf(
-                    if (isNewRecipe) "" else String.format(Locale.getDefault(), "%.0f", recipe.butterPercent)
+                    toTextFieldValue(
+                        if (isNewRecipe)
+                            ""
+                        else
+                            String.format(Locale.getDefault(), "%.0f", recipe.butterPercent)
+                    )
                 ),
                 correction = mutableStateOf(
-                    if (isNewRecipe || recipe.butterGramCorrection == 0) "" else recipe.butterGramCorrection.toString()
+                    toTextFieldValue(
+                        if (isNewRecipe || recipe.butterGramCorrection == 0)
+                            ""
+                        else
+                            recipe.butterGramCorrection.toString()
+                    )
                 ),
             ),
             IngredientUiItemModel(
                 ingredient = IngredientType.Yeast,
-                quantity = mutableStateOf(if (isNewRecipe) "" else recipe.yeastGram.toString()),
+                quantity = mutableStateOf(toTextFieldValue(if (isNewRecipe) "" else recipe.yeastGram.toString())),
                 percent = mutableStateOf(
-                    if (isNewRecipe) "" else String.format(Locale.getDefault(), "%.0f", recipe.yeastPercent)
+                    toTextFieldValue(
+                        if (isNewRecipe)
+                            ""
+                        else
+                            String.format(Locale.getDefault(), "%.0f", recipe.yeastPercent)
+                    )
                 ),
                 correction = mutableStateOf(
-                    if (isNewRecipe || recipe.yeastGramCorrection == 0) "" else recipe.yeastGramCorrection.toString()
+                    toTextFieldValue(
+                        if (isNewRecipe || recipe.yeastGramCorrection == 0)
+                            ""
+                        else
+                            recipe.yeastGramCorrection.toString()
+                    )
                 ),
             ),
             IngredientUiItemModel(
                 ingredient = IngredientType.Milk,
-                quantity = mutableStateOf(if (isNewRecipe) "" else recipe.milkGram.toString()),
+                quantity = mutableStateOf(toTextFieldValue(if (isNewRecipe) "" else recipe.milkGram.toString())),
                 percent = mutableStateOf(
-                    if (isNewRecipe) "" else String.format(Locale.getDefault(), "%.0f", recipe.milkPercent)
+                    toTextFieldValue(
+                        if (isNewRecipe)
+                            ""
+                        else
+                            String.format(Locale.getDefault(), "%.0f", recipe.milkPercent)
+                    )
                 ),
                 correction = mutableStateOf(
-                    if (isNewRecipe || recipe.milkGramCorrection == 0) "" else recipe.milkGramCorrection.toString()
+                    toTextFieldValue(
+                        if (isNewRecipe || recipe.milkGramCorrection == 0)
+                            ""
+                        else
+                            recipe.milkGramCorrection.toString()
+                    )
                 ),
             ),
             IngredientUiItemModel(
                 ingredient = IngredientType.Egg,
-                quantity = mutableStateOf(if (isNewRecipe) "" else recipe.eggGram.toString()),
+                quantity = mutableStateOf(toTextFieldValue(if (isNewRecipe) "" else recipe.eggGram.toString())),
                 percent = mutableStateOf(
-                    if (isNewRecipe) "" else String.format(Locale.getDefault(), "%.0f", recipe.eggPercent)
+                    toTextFieldValue(
+                        if (isNewRecipe)
+                            ""
+                        else
+                            String.format(Locale.getDefault(), "%.0f", recipe.eggPercent)
+                    )
                 ),
                 correction = mutableStateOf(
-                    if (isNewRecipe || recipe.eggGramCorrection == 0) "" else recipe.eggGramCorrection.toString()
+                    toTextFieldValue(
+                        if (isNewRecipe || recipe.eggGramCorrection == 0)
+                            ""
+                        else
+                            recipe.eggGramCorrection.toString()
+                    )
                 ),
             ),
         )
     }
 
-    fun updateIngredientTableRows() {
+    private fun updateIngredientTableRows() {
         val recipe = recipeEntity
         val newRows = listOf(
             Triple(recipe.waterGram, recipe.waterPercent, recipe.waterGramCorrection),
@@ -163,9 +241,9 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
         ).mapIndexed { index, (gram, percent, correction) ->
             val oldRow = _tableIngredientRows.value[index + 1]
             oldRow.copy(
-                quantity = mutableStateOf(gram.toStringOrBlank()),
-                percent = mutableStateOf(percent.formatToStringOrBlank()),
-                correction = mutableStateOf(correction.toStringOrBlank()),
+                quantity = mutableStateOf(toTextFieldValue(gram.toStringOrBlank())),
+                percent = mutableStateOf(toTextFieldValue(percent.formatToStringOrBlank())),
+                correction = mutableStateOf(toTextFieldValue(correction.toStringOrBlank()))
             )
         }
         _tableIngredientRows.value = _tableIngredientRows.value
@@ -175,6 +253,12 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
                     this[i + 1] = newRows[i]
                 }
             }
+    }
+
+    // Хелпер, чтобы создать TextFieldValue c курсором в конце
+    private fun toTextFieldValue(text: String): TextFieldValue {
+        val length = text.length
+        return TextFieldValue(text, TextRange(length))
     }
 
     fun onCalculationClick() {
@@ -223,6 +307,8 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
 
         isWaterValidationWarn.value = recipeEntity.waterPercent !in 59.5..80.0
         isSaltValidationError.value = recipeEntity.saltPercent > 2.5
+
+        updateIngredientTableRows()
     }
 
     private fun calculateWaterPercent() {

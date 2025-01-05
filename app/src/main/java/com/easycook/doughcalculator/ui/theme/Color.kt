@@ -10,3 +10,4 @@ val Accent = Color(0xFFE21D1D)
 // DarkColorScheme
 
 // LightColorScheme
+val Background = Color(0xFFE1DDD2)

@@ -9,7 +9,8 @@
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="light_gray">#70EDE9E9</color>
+    <color name="semi_white">#33FFFFFF</color>
+    <color name="light_gray">#66EDE9E9</color>
     <color name="dark_gray">#2A2928</color>
     <color name="recipe_background">#E1DDD2</color>
 

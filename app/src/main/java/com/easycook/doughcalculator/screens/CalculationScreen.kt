@@ -2,6 +2,8 @@ package com.easycook.doughcalculator.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +19,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.material.icons.Icons
@@ -49,18 +52,20 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Transparent
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -69,6 +74,8 @@ import androidx.navigation.NavHostController
 import com.easycook.doughcalculator.R
 import com.easycook.doughcalculator.R.color.dark_gray
 import com.easycook.doughcalculator.R.color.light_gray
+import com.easycook.doughcalculator.R.color.semi_white
+import com.easycook.doughcalculator.R.color.orange_700
 import com.easycook.doughcalculator.R.color.orange_900
 import com.easycook.doughcalculator.R.color.text_orange
 import com.easycook.doughcalculator.R.color.text_red
@@ -78,6 +85,7 @@ import com.easycook.doughcalculator.common.SAVE_RECIPE_SCREEN
 import com.easycook.doughcalculator.database.DoughRecipeEntity
 import com.easycook.doughcalculator.models.IngredientType
 import com.easycook.doughcalculator.models.IngredientUiItemModel
+import com.easycook.doughcalculator.ui.theme.Background
 import com.easycook.doughcalculator.ui.theme.FontFamilyDefault
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,13 +94,25 @@ fun CalculationScreen(
     navController: NavHostController,
     viewModel: RecipeViewModel
 ) {
+    val focusManager = LocalFocusManager.current
     Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = {
+                        focusManager.clearFocus()
+                    }
+                )
+            },
         topBar = {
             CenterAlignedTopAppBar(
                 modifier = Modifier.height(50.dp),
                 title = {
                     Text(
-                        modifier = Modifier.fillMaxWidth().padding(top = 14.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 14.dp),
                         text = stringResource(id = R.string.screen_title_calculation),
                         textAlign = TextAlign.Center,
                         style = typography.titleLarge,
@@ -124,10 +144,7 @@ fun CalculationScreen(
                             onDismissRequest = { menuExpanded = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text(
-                                    text = stringResource(id = R.string.menu_item_new),
-                                    fontWeight = FontWeight.SemiBold,
-                                ) },
+                                text = { Text(stringResource(id = R.string.menu_item_new)) },
                                 leadingIcon = {
                                     Image(
                                         painter = painterResource(id = R.drawable.ic_create),
@@ -142,10 +159,7 @@ fun CalculationScreen(
                                 },
                             )
                             DropdownMenuItem(
-                                text = { Text(
-                                    stringResource(id = R.string.menu_item_open),
-                                    fontWeight = FontWeight.SemiBold,
-                                ) },
+                                text = { Text(stringResource(id = R.string.menu_item_open)) },
                                 leadingIcon = {
                                     Image(
                                         painter = painterResource(id = R.drawable.ic_my_recipes),
@@ -164,10 +178,7 @@ fun CalculationScreen(
                                 },
                             )
                             DropdownMenuItem(
-                                text = { Text(
-                                    stringResource(id = R.string.menu_item_save),
-                                    fontWeight = FontWeight.SemiBold,
-                                ) },
+                                text = { Text(stringResource(id = R.string.menu_item_save)) },
                                 leadingIcon = {
                                     Image(
                                         painter = painterResource(id = R.drawable.ic_save),
@@ -189,25 +200,19 @@ fun CalculationScreen(
             )
         },
     ) { paddingValues ->
-        Box(
+        IngredientsTable(
+            viewModel = viewModel,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.background_main),
-                contentDescription = "Background image",
-                modifier = Modifier.matchParentSize(),
-                contentScale = ContentScale.FillBounds
-            )
-            IngredientsTable(viewModel)
-        }
+                .background(Background)
+        )
     }
 }
 
 @SuppressLint("DefaultLocale", "UnrememberedMutableState")
 @Composable
-fun IngredientsTable(viewModel: RecipeViewModel) {
+fun IngredientsTable(viewModel: RecipeViewModel, modifier: Modifier) {
     val tableRows = viewModel.tableIngredientRows
     val recipe = viewModel.recipeEntity
     val isNewRecipe = recipe.recipeId == null
@@ -218,33 +223,37 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
     val showWaterValidationWarn = viewModel.isWaterValidationWarn
     val showSaltValidationError = viewModel.isSaltValidationError
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = modifier) {
         if (!isNewRecipe) {
             Text(
                 text = recipe.title,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 12.dp, bottom = 6.dp),
+                    .padding(top = 12.dp),
                 fontSize = 28.sp,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
                 color = colorResource(orange_900)
             )
         }
-        TableTitle()
         CalculateByWeightOrPercentTableRow(isCalculateByWeight)
+        TableTitle()
         LazyVerticalGrid(
             columns = GridCells.Fixed(1),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-            //contentPadding = PaddingValues(4.dp),
+                .padding(horizontal = 8.dp)
+                .offset(y = (-12).dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             items(tableRows, key = { it.ingredient }) { row ->
                 Column {
-                    IngredientRow(row, isCalculateByWeight, recipe)
+                    IngredientRow(
+                        ingredientItem = row,
+                        isCalculateByWeight = isCalculateByWeight,
+                        recipe = recipe,
+                    ) { viewModel.onCalculationClick() }
                     if (row.ingredient == IngredientType.Water && showWaterValidationWarn.value) {
                         ValidationRow(R.string.validation_water_range_recommended, false)
                     }
@@ -265,13 +274,7 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
         }
         Box(modifier = Modifier.fillMaxSize()) {
             Button(
-                onClick = {
-                    viewModel.onCalculationClick()
-                    if (showEmptyWaterError.value || showEmptyFlourError.value || showEmptySaltError.value) {
-                        return@Button
-                    }
-                    viewModel.updateIngredientTableRows()
-                },
+                onClick = { viewModel.onCalculationClick() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
@@ -327,48 +330,12 @@ fun IngredientsTable(viewModel: RecipeViewModel) {
 }
 
 @Composable
-fun TableTitle() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = stringResource(R.string.title_ingredient),
-            modifier = Modifier.weight(1.2f),
-            style = typography.titleMedium
-        )
-        Text(
-            text = stringResource(R.string.title_grams),
-            modifier = Modifier.weight(0.9f),
-            style = typography.titleMedium
-        )
-        Text(
-            text = stringResource(R.string.title_percent),
-            modifier = Modifier.weight(0.7f),
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            style = typography.titleMedium,
-        )
-        Text(
-            text = stringResource(R.string.title_correction),
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Start,
-            fontSize = 20.sp,
-            style = typography.titleMedium
-        )
-    }
-}
-
-@Composable
 fun CalculateByWeightOrPercentTableRow(isCalculateByWeight: MutableState<Boolean>) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(horizontal = 8.dp, vertical = 0.dp)
-            .offset(y = (-8).dp),
+            .padding(horizontal = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
@@ -377,7 +344,6 @@ fun CalculateByWeightOrPercentTableRow(isCalculateByWeight: MutableState<Boolean
                 .weight(1.25f)
                 .align(Alignment.CenterVertically),
             style = typography.titleMedium,
-            fontSize = 20.sp,
             color = colorResource(text_orange)
         )
         RadioButton(
@@ -407,49 +373,94 @@ fun CalculateByWeightOrPercentTableRow(isCalculateByWeight: MutableState<Boolean
 }
 
 @Composable
+fun TableTitle() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 12.dp, end = 8.dp)
+            .offset(y = (-8).dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = stringResource(R.string.title_ingredient),
+            modifier = Modifier.weight(1.2f),
+            style = typography.titleMedium
+        )
+        Text(
+            text = stringResource(R.string.title_grams),
+            modifier = Modifier.weight(0.9f),
+            style = typography.titleMedium
+        )
+        Text(
+            text = stringResource(R.string.title_percent),
+            modifier = Modifier.weight(0.7f),
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            style = typography.titleMedium,
+        )
+        Text(
+            text = stringResource(R.string.title_correction),
+            modifier = Modifier
+                .weight(1f)
+                .offset(y = (-10).dp),
+            textAlign = TextAlign.Start,
+            style = typography.titleMedium
+        )
+    }
+}
+
+@Composable
 fun IngredientRow(
     ingredientItem: IngredientUiItemModel,
     isCalculateByWeight: MutableState<Boolean>,
-    recipe: DoughRecipeEntity
+    recipe: DoughRecipeEntity,
+    onLastRowDone: () -> Unit,
 ) {
-    val gram = if (ingredientItem.quantity.value == "") 0 else ingredientItem.quantity.value.toInt()
-    val prc = if (ingredientItem.percent.value == "") 0.0 else ingredientItem.percent.value.toDouble()
-    val cor = if (ingredientItem.correction.value == "") 0 else ingredientItem.correction.value.toInt()
+    val gram = ingredientItem.quantity.value.text.toIntOrNull() ?: 0
+    val prc = ingredientItem.percent.value.text.toDoubleOrNull() ?: 0.0
+    val cor = ingredientItem.correction.value.text.toIntOrNull() ?: 0
     when (ingredientItem.ingredient) {
         IngredientType.Flour -> {
             recipe.flourGram = gram
             recipe.flourGramCorrection = cor
         }
+
         IngredientType.Water -> {
             recipe.waterGram = gram
             recipe.waterPercent = prc
             recipe.waterGramCorrection = cor
         }
+
         IngredientType.Salt -> {
             recipe.saltGram = gram
             recipe.saltPercent = prc
             recipe.saltGramCorrection = cor
         }
+
         IngredientType.Sugar -> {
             recipe.sugarGram = gram
             recipe.sugarPercent = prc
             recipe.sugarGramCorrection = cor
         }
+
         IngredientType.Butter -> {
             recipe.butterGram = gram
             recipe.butterPercent = prc
             recipe.butterGramCorrection = cor
         }
+
         IngredientType.Yeast -> {
             recipe.yeastGram = gram
             recipe.yeastPercent = prc
             recipe.yeastGramCorrection = cor
         }
+
         IngredientType.Milk -> {
             recipe.milkGram = gram
             recipe.milkPercent = prc
             recipe.milkGramCorrection = cor
         }
+
         IngredientType.Egg -> {
             recipe.eggGram = gram
             recipe.eggPercent = prc
@@ -460,33 +471,39 @@ fun IngredientRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 4.dp, vertical = 0.dp),
+            .padding(horizontal = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
             text = stringResource(ingredientItem.ingredient.title),
             modifier = Modifier
-                .weight(1.25f)
+                .weight(1.15f)
                 .align(Alignment.CenterVertically),
-            fontSize = 28.sp
+            fontSize = 24.sp
         )
         ValueInput(
             modifier = Modifier.weight(1f),
             inputValue = ingredientItem.quantity,
             isEnabled = if (ingredientItem.ingredient == IngredientType.Flour) true else isCalculateByWeight.value,
-            isWeight = true
+            isWeight = true,
+            isLastRow = ingredientItem.ingredient == IngredientType.Egg,
+            onDoneClick = onLastRowDone,
         )
         ValueInput(
             modifier = Modifier.weight(0.8f),
             inputValue = ingredientItem.percent,
             isEnabled = if (ingredientItem.ingredient == IngredientType.Flour) false else !isCalculateByWeight.value,
-            isWeight = false
+            isWeight = false,
+            isLastRow = ingredientItem.ingredient == IngredientType.Egg,
+            onDoneClick = onLastRowDone,
         )
         ValueInput(
             modifier = Modifier.weight(1f),
             inputValue = ingredientItem.correction,
-            isEnabled = ingredientItem.ingredient == IngredientType.Flour && isCalculateByWeight.value,
-            isWeight = true
+            isEnabled = ingredientItem.ingredient == IngredientType.Flour/* && isCalculateByWeight.value*/,
+            isWeight = true,
+            isLastRow = recipe.waterGram != 0 && recipe.saltGram != 0,
+            onDoneClick = onLastRowDone,
         )
     }
 }
@@ -494,36 +511,56 @@ fun IngredientRow(
 @Composable
 fun ValueInput(
     modifier: Modifier = Modifier,
-    inputValue: MutableState<String>,
+    inputValue: MutableState<TextFieldValue>,
     isEnabled: Boolean,
-    isWeight: Boolean
+    isWeight: Boolean,
+    isLastRow: Boolean,
+    onDoneClick: () -> Unit,
 ) {
+    val focusManager = LocalFocusManager.current
     val maxLength = if (isWeight) 4 else 2
     OutlinedTextField(
         value = inputValue.value,
-        onValueChange = { newText ->
-            inputValue.value = newText.filter { it.isDigit() }.take(maxLength)
+        onValueChange = { newValue ->
+            val filteredText = newValue.text.filter { it.isDigit() }.take(maxLength)
+            inputValue.value = newValue.copy(
+                text = filteredText,
+                selection = TextRange(filteredText.length)
+            )
         },
-        modifier = modifier,
+        modifier = modifier.height(48.dp),
         enabled = isEnabled,
         textStyle = TextStyle(
-            fontFamily = FontFamily(Font(R.font.halogen)),
-            fontSize = 24.sp,
-            textAlign = TextAlign.Center
+            fontFamily = FontFamilyDefault,
+            fontSize = 20.sp,
+            textAlign = TextAlign.Center,
         ),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            .copy(imeAction = ImeAction.Next),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = if (isLastRow) ImeAction.Done else ImeAction.Next
+        ),
+        keyboardActions = KeyboardActions(
+            onNext = { focusManager.moveFocus(FocusDirection.Down) },
+            onDone = {
+                focusManager.clearFocus()
+                onDoneClick.invoke()
+            },
+            onGo = {
+                focusManager.clearFocus()
+                onDoneClick.invoke()
+            },
+        ),
         singleLine = true,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedTextColor = colorResource(orange_900),
+            focusedTextColor = colorResource(orange_700),
             disabledTextColor = colorResource(dark_gray),
             focusedContainerColor = colorResource(light_gray),
             unfocusedContainerColor = colorResource(light_gray),
             disabledContainerColor = if (isEnabled) colorResource(light_gray) else Transparent,
-            cursorColor = colorResource(orange_900),
+            cursorColor = colorResource(orange_700),
             selectionColors = LocalTextSelectionColors.current,
-            focusedBorderColor = colorResource(orange_900),
-            unfocusedBorderColor = colorResource(light_gray),
+            focusedBorderColor = colorResource(orange_700),
+            unfocusedBorderColor = colorResource(semi_white),
             disabledBorderColor = if (isEnabled) colorResource(light_gray) else Transparent,
             errorTextColor = colorResource(text_red),
             errorContainerColor = Transparent,

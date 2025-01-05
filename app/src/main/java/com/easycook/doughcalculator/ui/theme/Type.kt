@@ -31,7 +31,7 @@ val Typography = Typography(
         color = OrangePrimary,
         fontFamily = FontFamily(Font(R.font.roboto_medium)),
         fontWeight = FontWeight.SemiBold,
-        fontSize = 22.sp
+        fontSize = 18.sp
     ),
     labelSmall = TextStyle(
         fontFamily = FontFamily.Default,

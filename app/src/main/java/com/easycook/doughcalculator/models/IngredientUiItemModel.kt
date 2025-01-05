@@ -2,13 +2,14 @@ package com.easycook.doughcalculator.models
 
 import androidx.annotation.StringRes
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.text.input.TextFieldValue
 import com.easycook.doughcalculator.R
 
 data class IngredientUiItemModel(
     val ingredient: IngredientType,
-    var quantity: MutableState<String>,
-    var percent: MutableState<String>,
-    var correction: MutableState<String>,
+    var quantity: MutableState<TextFieldValue>,
+    var percent: MutableState<TextFieldValue>,
+    var correction: MutableState<TextFieldValue>,
 )
 
 enum class IngredientType(@StringRes val title: Int) {
