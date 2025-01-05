@@ -68,15 +68,15 @@ Android mobile App for calculation dough ingredients ratios. Writes on JetPack C
 ├── main
 │   ├── java/com/easycook/doughcalculator
 │   │   ├── database    # Room (DAO, Database, Entities)
-│   │   ├── models       # IngredientUiItemModel, IngredientType и т.д.
-│   │   ├── screens      # Основные Composable-экраны (CalculationScreen, SaveRecipeScreen, RecipeListScreen и т.п.)
-│   │   ├── ui/theme     # Темы и стили Compose
-│   │   ├── common     # Утилиты, константы, вспомогательные функции
+│   │   ├── models      # IngredientUiItemModel, IngredientType и т.д.
+│   │   ├── screens     # Основные Composable-экраны (CalculationScreen, SaveRecipeScreen, RecipeListScreen и т.п.)
+│   │   ├── ui/theme    # Темы и стили Compose
+│   │   ├── common      # Утилиты, константы, вспомогательные функции
 │   │   └── RecipeViewModel.kt
 │   └── res
-│       ├── layout        # XML-макеты (если используются)
-│       ├── values        # Файлы строк, тем и т.д.
-│       └── drawable   # Иконки, изображения
+│       ├── layout      # XML-макеты (если используются)
+│       ├── values      # Файлы строк, тем и т.д.
+│       └── drawable    # Иконки, изображения
 
 **Как запустить проект**
 
