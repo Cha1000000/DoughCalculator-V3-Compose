@@ -1,6 +1,7 @@
 package com.easycook.doughcalculator.screens
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -36,6 +38,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
@@ -48,6 +52,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -210,6 +215,7 @@ fun CalculationScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("DefaultLocale", "UnrememberedMutableState")
 @Composable
 fun IngredientsTable(viewModel: RecipeViewModel, modifier: Modifier) {
@@ -263,14 +269,33 @@ fun IngredientsTable(viewModel: RecipeViewModel, modifier: Modifier) {
                 }
             }
         }
-        if (!isNewRecipe) {
-            Text(
-                text = recipe.description,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                style = typography.bodyLarge,
-            )
+        if (!isNewRecipe && recipe.description.isNotBlank()) {
+            val isDescriptionOpened = remember { mutableStateOf(false) }
+            OutlinedButton(
+                onClick = { isDescriptionOpened.value = !isDescriptionOpened.value },
+                modifier = Modifier.wrapContentWidth().align(Alignment.End).padding(end = 12.dp),
+                border = BorderStroke(width = 1.dp, color = colorScheme.primary),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = colorResource(light_gray),
+                    contentColor = colorScheme.primary,
+                )
+            ) {
+                Text(stringResource(R.string.text_field_description))
+            }
+            if (isDescriptionOpened.value) {
+                ModalBottomSheet(onDismissRequest = { isDescriptionOpened.value = false }) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(
+                            text = recipe.description,
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(horizontal = 12.dp, vertical = 8.dp),
+                            style = typography.bodyLarge,
+                        )
+                    }
+                }
+            }
         }
         Box(modifier = Modifier.fillMaxSize()) {
             Button(
