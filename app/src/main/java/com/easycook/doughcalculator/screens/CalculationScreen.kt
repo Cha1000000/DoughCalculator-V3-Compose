@@ -27,7 +27,6 @@ import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -46,7 +45,6 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -79,14 +77,16 @@ import androidx.navigation.NavHostController
 import com.easycook.doughcalculator.R
 import com.easycook.doughcalculator.R.color.dark_gray
 import com.easycook.doughcalculator.R.color.light_gray
-import com.easycook.doughcalculator.R.color.semi_white
 import com.easycook.doughcalculator.R.color.orange_700
 import com.easycook.doughcalculator.R.color.orange_900
+import com.easycook.doughcalculator.R.color.semi_white
 import com.easycook.doughcalculator.R.color.text_orange
 import com.easycook.doughcalculator.R.color.text_red
 import com.easycook.doughcalculator.R.color.validation_text_color
 import com.easycook.doughcalculator.RecipeViewModel
 import com.easycook.doughcalculator.common.SAVE_RECIPE_SCREEN
+import com.easycook.doughcalculator.common.ShowAlertDialog
+import com.easycook.doughcalculator.common.ShowConfirmDialog
 import com.easycook.doughcalculator.database.DoughRecipeEntity
 import com.easycook.doughcalculator.models.IngredientType
 import com.easycook.doughcalculator.models.IngredientUiItemModel
@@ -100,6 +100,23 @@ fun CalculationScreen(
     viewModel: RecipeViewModel
 ) {
     val focusManager = LocalFocusManager.current
+    val openResetRecipeConfirmDialog = rememberSaveable { mutableStateOf(false) }
+    val openSkipSaveChangesConfirmDialog = rememberSaveable { mutableStateOf(false) }
+
+    fun resetRecipe() {
+        viewModel.resetRecipe()
+        viewModel.resetIngredientTableRows()
+    }
+
+    fun openRecipeList() {
+        navController.navigate(navController.graph.findStartDestination().route!!) {
+            popUpTo(navController.graph.findStartDestination().id) {
+                inclusive = true
+            }
+            launchSingleTop = true
+        }
+    }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -159,8 +176,12 @@ fun CalculationScreen(
                                 },
                                 onClick = {
                                     menuExpanded = false
-                                    viewModel.resetRecipe()
-                                    viewModel.resetIngredientTableRows()
+                                    val hasUnsavedData = viewModel.hasUnsavedChanges()
+                                    if (hasUnsavedData) {
+                                        openResetRecipeConfirmDialog.value = true
+                                    } else {
+                                        resetRecipe()
+                                    }
                                 },
                             )
                             DropdownMenuItem(
@@ -174,11 +195,11 @@ fun CalculationScreen(
                                 },
                                 onClick = {
                                     menuExpanded = false
-                                    navController.navigate(navController.graph.findStartDestination().route!!) {
-                                        popUpTo(navController.graph.findStartDestination().id) {
-                                            inclusive = true
-                                        }
-                                        launchSingleTop = true
+                                    val hasUnsavedData = viewModel.hasUnsavedChanges()
+                                    if (hasUnsavedData) {
+                                        openSkipSaveChangesConfirmDialog.value = true
+                                    } else {
+                                        openRecipeList()
                                     }
                                 },
                             )
@@ -212,6 +233,28 @@ fun CalculationScreen(
                 .padding(paddingValues)
                 .background(Background)
         )
+
+        if (openResetRecipeConfirmDialog.value) {
+            ShowConfirmDialog(
+                title = stringResource(R.string.alert_title_warning),
+                message = stringResource(R.string.recipe_reset_confirm_message),
+                dialogState = openResetRecipeConfirmDialog,
+            ) {
+                resetRecipe()
+                openResetRecipeConfirmDialog.value = false
+            }
+        }
+
+        if (openSkipSaveChangesConfirmDialog.value) {
+            ShowConfirmDialog(
+                title = stringResource(R.string.alert_title_warning),
+                message = stringResource(R.string.continue_with_temporary_save_changes_confirm_message),
+                dialogState = openSkipSaveChangesConfirmDialog,
+            ) {
+                openRecipeList()
+                openSkipSaveChangesConfirmDialog.value = false
+            }
+        }
     }
 }
 
@@ -273,7 +316,10 @@ fun IngredientsTable(viewModel: RecipeViewModel, modifier: Modifier) {
             val isDescriptionOpened = remember { mutableStateOf(false) }
             OutlinedButton(
                 onClick = { isDescriptionOpened.value = !isDescriptionOpened.value },
-                modifier = Modifier.wrapContentWidth().align(Alignment.End).padding(end = 12.dp),
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .align(Alignment.End)
+                    .padding(end = 12.dp),
                 border = BorderStroke(width = 1.dp, color = colorScheme.primary),
                 colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = colorResource(light_gray),
@@ -289,7 +335,8 @@ fun IngredientsTable(viewModel: RecipeViewModel, modifier: Modifier) {
                     ) {
                         Text(
                             text = recipe.description,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
                                 .padding(horizontal = 12.dp, vertical = 8.dp),
                             style = typography.bodyLarge,
                         )
@@ -609,40 +656,4 @@ fun ValidationRow(validationTextResId: Int, isBlocking: Boolean) {
             fontSize = 16.sp
         )
     }
-}
-
-@Composable
-fun ShowAlertDialog(
-    isOpen: MutableState<Boolean>,
-    title: String? = null,
-    message: String? = null,
-    titleId: Int? = null,
-    messageId: Int? = null,
-    onConfirm: () -> Unit = { isOpen.value = false }
-) {
-    AlertDialog(
-        onDismissRequest = { isOpen.value = false },
-        title = {
-            Text(
-                color = colorScheme.tertiary,
-                text = if (titleId != null) stringResource(titleId) else title
-                    ?: stringResource(R.string.alert_title_info),
-                style = typography.labelLarge,
-                fontWeight = FontWeight.Bold
-            )
-        },
-        text = {
-            Text(
-                text = if (messageId != null) stringResource(messageId) else message
-                    ?: stringResource(R.string.alert_description_try_again),
-                style = typography.labelLarge,
-                fontSize = 20.sp
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(text = stringResource(R.string.alert_button_ok), fontSize = 20.sp)
-            }
-        },
-    )
 }

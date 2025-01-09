@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -30,12 +29,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,7 +44,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,8 +51,8 @@ import androidx.navigation.NavHostController
 import com.easycook.doughcalculator.R
 import com.easycook.doughcalculator.RecipeViewModel
 import com.easycook.doughcalculator.common.CALCULATION_SCREEN
+import com.easycook.doughcalculator.common.ShowConfirmDialog
 import com.easycook.doughcalculator.database.DoughRecipeEntity
-import com.easycook.doughcalculator.ui.theme.DoughCalculatorTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -133,6 +128,7 @@ fun RecipeItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         onClick = {
             viewModel.recipeEntity = item
+            viewModel.refreshSavedRecipeOriginalState()
             viewModel.resetIngredientTableRows()
             navController.navigate(CALCULATION_SCREEN) {
                 launchSingleTop = true
@@ -177,53 +173,14 @@ fun RecipeItem(
         }
 
         if (openDialog.value) {
-            ShowConfirmDialog(openDialog, item.title) {
+            ShowConfirmDialog(
+                title = stringResource(R.string.delete_confirm_title),
+                message = stringResource(R.string.recipe_delete_confirm_message, item.title),
+                dialogState = openDialog,
+            ) {
                 viewModel.deleteRecipe(item)
                 openDialog.value = false
             }
-        }
-    }
-}
-
-@Composable
-fun ShowConfirmDialog(
-    dialogState: MutableState<Boolean>,
-    recipeTitle: String,
-    onConfirm: () -> Unit
-) {
-    DoughCalculatorTheme {
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            color = colorScheme.background
-        ) {
-            AlertDialog(
-                onDismissRequest = { dialogState.value = false },
-                title = {
-                    Text(
-                        color = colorScheme.tertiary,
-                        text = stringResource(R.string.delete_confirm_title),
-                        style = typography.labelLarge,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                text = {
-                    Text(
-                        text = stringResource(R.string.recipe_delete_confirm_message, recipeTitle),
-                        style = typography.labelLarge,
-                        fontSize = 16.sp,
-                    )
-                },
-                confirmButton = {
-                    TextButton(onClick = onConfirm) {
-                        Text(text = stringResource(R.string.alert_button_yes), fontSize = 20.sp)
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { dialogState.value = false }) {
-                        Text(text = stringResource(R.string.alert_button_cancel), fontSize = 20.sp)
-                    }
-                },
-            )
         }
     }
 }

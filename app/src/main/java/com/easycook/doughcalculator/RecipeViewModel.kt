@@ -15,10 +15,10 @@ import com.easycook.doughcalculator.models.IngredientType
 import com.easycook.doughcalculator.models.IngredientUiItemModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
@@ -29,6 +29,7 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
     ViewModel() {
 
     var recipeEntity by mutableStateOf(DoughRecipeEntity())
+    private var savedRecipeOriginal by mutableStateOf(DoughRecipeEntity())
 
     val isCalculateByWeight = mutableStateOf(true)
     val isFlourEmpty = mutableStateOf(false)
@@ -61,6 +62,7 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
 
     fun resetRecipe() {
         recipeEntity = DoughRecipeEntity()
+        savedRecipeOriginal = recipeEntity.clone()
     }
 
     fun resetIngredientTableRows() {
@@ -462,13 +464,40 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
     fun onSaveClick(title: String, description: String) {
         if (title.isEmpty()) return
         val recipe = recipeEntity.copy(title = title, description = description)
+        val isNewRecipe = recipe.recipeId == null
         viewModelScope.launch(Dispatchers.IO) {
-            database.dao.insert(recipe)
-            database.dao.getAllRecipes().collect { updatedRecipes ->
-                if (updatedRecipes.isEmpty()) return@collect
-                recipeEntity = updatedRecipes.last()
-            }
-            cancel()
+            if (isNewRecipe) database.dao.insert(recipe) else database.dao.update(recipe)
         }
+        viewModelScope.launch(Dispatchers.Main) {
+            recipes.collectLatest { updatedRecipes ->
+                if (updatedRecipes.isEmpty()) return@collectLatest
+                val currentRecipe = if (isNewRecipe) {
+                    updatedRecipes.last()
+                } else {
+                    updatedRecipes.find { it.recipeId == recipe.recipeId }
+                }
+                currentRecipe?.let {
+                    recipeEntity = it
+                    savedRecipeOriginal = it.clone()
+                }
+            }
+        }
+    }
+
+    fun hasUnsavedChanges(): Boolean {
+        return recipeEntity != savedRecipeOriginal
+    }
+
+    fun refreshSavedRecipeOriginalState() {
+        savedRecipeOriginal = recipeEntity.clone()
+    }
+
+    private fun DoughRecipeEntity.clone(): DoughRecipeEntity {
+        val clone = this::class.java.getDeclaredConstructor().newInstance()
+        this::class.java.declaredFields.forEach { field ->
+            field.isAccessible = true
+            field.set(clone, field.get(this))
+        }
+        return clone as DoughRecipeEntity
     }
 }
