@@ -116,7 +116,7 @@ fun RecipeItem(
     navController: NavHostController,
     viewModel: RecipeViewModel
 ) {
-    val cardBackground = colorScheme.background
+    val cardBackground = colorScheme.surface
     var isFavorite by remember { mutableStateOf(item.isFavorite) }
     val openDialog = rememberSaveable { mutableStateOf(false) }
     Card(
@@ -197,7 +197,8 @@ fun AddRecipeButton(navController: NavHostController, viewModel: RecipeViewModel
             }
         },
         shape = CircleShape,
-        containerColor = colorScheme.primary
+        containerColor = colorScheme.primary,
+        contentColor = colorScheme.onSecondary,
     ) {
         Icon(
             imageVector = Icons.Filled.Add,

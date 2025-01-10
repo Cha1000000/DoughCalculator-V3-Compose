@@ -48,7 +48,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.easycook.doughcalculator.R
 import com.easycook.doughcalculator.R.color.light_gray
-import com.easycook.doughcalculator.R.color.orange_900
+import com.easycook.doughcalculator.R.color.semi_gray
+import com.easycook.doughcalculator.R.color.text_gray
 import com.easycook.doughcalculator.RecipeViewModel
 import com.easycook.doughcalculator.common.CALCULATION_SCREEN
 
@@ -108,6 +109,14 @@ fun SaveRecipeScreen(
                     .padding(top = 40.dp, start = 68.dp, end = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                val textFieldColors = TextFieldDefaults.colors(
+                    focusedContainerColor = colorResource(light_gray),
+                    unfocusedContainerColor = colorResource(light_gray),
+                    focusedTextColor = colorScheme.primary,
+                    unfocusedTextColor = colorResource(text_gray),
+                    cursorColor = colorScheme.primary,
+                    selectionColors = LocalTextSelectionColors.current,
+                )
                 TextField(
                     value = recipeName,
                     onValueChange = { recipeName = it },
@@ -127,14 +136,7 @@ fun SaveRecipeScreen(
                     keyboardActions = KeyboardActions(
                         onNext = { focusManager.moveFocus(FocusDirection.Down) },
                     ),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = colorResource(light_gray),
-                        unfocusedContainerColor = colorResource(light_gray),
-                        focusedTextColor = colorResource(orange_900),
-                        unfocusedTextColor = colorScheme.secondary,
-                        cursorColor = colorResource(orange_900),
-                        selectionColors = LocalTextSelectionColors.current,
-                    ),
+                    colors = textFieldColors,
                 )
                 TextField(
                     value = recipeDescription,
@@ -149,14 +151,7 @@ fun SaveRecipeScreen(
                     textStyle = typography.bodyLarge,
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 15,
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = colorResource(light_gray),
-                        unfocusedContainerColor = colorResource(light_gray),
-                        focusedTextColor = colorResource(orange_900),
-                        unfocusedTextColor = colorScheme.secondary,
-                        cursorColor = colorResource(orange_900),
-                        selectionColors = LocalTextSelectionColors.current,
-                    ),
+                    colors = textFieldColors,
                 )
                 Button(
                     onClick = {
@@ -169,7 +164,9 @@ fun SaveRecipeScreen(
                     modifier = Modifier.align(Alignment.End),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colorScheme.primary,
-                        contentColor = colorScheme.onPrimary
+                        contentColor = colorScheme.onSecondary,
+                        disabledContainerColor = colorResource(semi_gray),
+                        disabledContentColor = colorResource(text_gray),
                     ),
                     shape = RoundedCornerShape(20.dp)
                 ) {

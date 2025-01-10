@@ -10,15 +10,16 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="semi_white">#33FFFFFF</color>
-    <color name="light_gray">#66EDE9E9</color>
+    <color name="light_gray">#66DCD5D5</color>
+    <color name="semi_gray">#7FABA9A9</color>
     <color name="dark_gray">#2A2928</color>
     <color name="recipe_background">#E1DDD2</color>
 
     <!-- text -->
     <color name="text_white">#ffffff</color>
-    <color name="text_gray">#941a1a1a</color>
-    <color name="text_red">#d7102b</color>
-    <color name="text_orange">#ffa500</color>
+    <color name="text_gray">#CC363636</color>
+    <color name="text_red">#FF5449</color>
+    <color name="text_orange">#F2A302</color>
     <color name="text_yellow">#FFC107</color>
 
     <color name="edit_text_color">#574038</color>

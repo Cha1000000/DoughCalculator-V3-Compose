@@ -75,10 +75,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.easycook.doughcalculator.R
-import com.easycook.doughcalculator.R.color.dark_gray
 import com.easycook.doughcalculator.R.color.light_gray
 import com.easycook.doughcalculator.R.color.orange_700
-import com.easycook.doughcalculator.R.color.orange_900
 import com.easycook.doughcalculator.R.color.semi_white
 import com.easycook.doughcalculator.R.color.text_orange
 import com.easycook.doughcalculator.R.color.text_red
@@ -90,7 +88,6 @@ import com.easycook.doughcalculator.common.ShowConfirmDialog
 import com.easycook.doughcalculator.database.DoughRecipeEntity
 import com.easycook.doughcalculator.models.IngredientType
 import com.easycook.doughcalculator.models.IngredientUiItemModel
-import com.easycook.doughcalculator.ui.theme.Background
 import com.easycook.doughcalculator.ui.theme.FontFamilyDefault
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -122,9 +119,7 @@ fun CalculationScreen(
             .fillMaxSize()
             .pointerInput(Unit) {
                 detectTapGestures(
-                    onTap = {
-                        focusManager.clearFocus()
-                    }
+                    onTap = { focusManager.clearFocus() }
                 )
             },
         topBar = {
@@ -231,7 +226,7 @@ fun CalculationScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(Background)
+                .background(colorScheme.background)
         )
 
         if (openResetRecipeConfirmDialog.value) {
@@ -282,7 +277,7 @@ fun IngredientsTable(viewModel: RecipeViewModel, modifier: Modifier) {
                 fontSize = 28.sp,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
-                color = colorResource(orange_900)
+                color = colorScheme.onSurface,
             )
         }
         CalculateByWeightOrPercentTableRow(isCalculateByWeight)
@@ -320,7 +315,7 @@ fun IngredientsTable(viewModel: RecipeViewModel, modifier: Modifier) {
                     .wrapContentWidth()
                     .align(Alignment.End)
                     .padding(end = 12.dp),
-                border = BorderStroke(width = 1.dp, color = colorScheme.primary),
+                border = BorderStroke(width = 0.4.dp, color = colorScheme.primary),
                 colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = colorResource(light_gray),
                     contentColor = colorScheme.primary,
@@ -354,7 +349,7 @@ fun IngredientsTable(viewModel: RecipeViewModel, modifier: Modifier) {
                 contentPadding = PaddingValues(vertical = 16.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorScheme.primary,
-                    contentColor = colorScheme.onPrimary
+                    contentColor = colorScheme.onSecondary,
                 ),
                 shape = RoundedCornerShape(20.dp)
             ) {
@@ -403,6 +398,12 @@ fun IngredientsTable(viewModel: RecipeViewModel, modifier: Modifier) {
 
 @Composable
 fun CalculateByWeightOrPercentTableRow(isCalculateByWeight: MutableState<Boolean>) {
+    val colors = RadioButtonColors(
+        selectedColor = colorScheme.primary,
+        unselectedColor = colorResource(text_orange),
+        disabledSelectedColor = colorResource(light_gray),
+        disabledUnselectedColor = colorResource(light_gray)
+    )
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -422,23 +423,13 @@ fun CalculateByWeightOrPercentTableRow(isCalculateByWeight: MutableState<Boolean
             selected = isCalculateByWeight.value,
             onClick = { isCalculateByWeight.value = true },
             modifier = Modifier.weight(1f),
-            colors = RadioButtonColors(
-                selectedColor = colorScheme.primary,
-                unselectedColor = colorResource(text_orange),
-                disabledSelectedColor = colorResource(light_gray),
-                disabledUnselectedColor = colorResource(light_gray)
-            )
+            colors = colors
         )
         RadioButton(
             selected = !isCalculateByWeight.value,
             onClick = { isCalculateByWeight.value = false },
             modifier = Modifier.weight(1f),
-            colors = RadioButtonColors(
-                selectedColor = colorScheme.primary,
-                unselectedColor = colorResource(text_orange),
-                disabledSelectedColor = colorResource(light_gray),
-                disabledUnselectedColor = colorResource(light_gray)
-            )
+            colors = colors
         )
         Box(modifier = Modifier.weight(1f))
     }
@@ -624,14 +615,14 @@ fun ValueInput(
         ),
         singleLine = true,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedTextColor = colorResource(orange_700),
-            disabledTextColor = colorResource(dark_gray),
+            focusedTextColor = colorScheme.primary,
+            disabledTextColor = colorScheme.onBackground,
             focusedContainerColor = colorResource(light_gray),
             unfocusedContainerColor = colorResource(light_gray),
             disabledContainerColor = if (isEnabled) colorResource(light_gray) else Transparent,
             cursorColor = colorResource(orange_700),
             selectionColors = LocalTextSelectionColors.current,
-            focusedBorderColor = colorResource(orange_700),
+            focusedBorderColor = colorScheme.primary,
             unfocusedBorderColor = colorResource(semi_white),
             disabledBorderColor = if (isEnabled) colorResource(light_gray) else Transparent,
             errorTextColor = colorResource(text_red),
