@@ -58,7 +58,7 @@ Android mobile App for calculation dough ingredients ratios. Writes on JetPack C
 
 • **Модель**: [MVVM](https://developer.android.com/jetpack/guide) с ViewModel и MutableState/Flow
 
-• **DI**: [Hilt](https://developer.android.com/training/dependency-injection/hilt-android) (по желанию)
+• **DI**: [Hilt](https://developer.android.com/training/dependency-injection/hilt-android)
 
 • **Навигация**: [Jetpack Navigation Compose](https://developer.android.com/jetpack/compose/navigation)
 
