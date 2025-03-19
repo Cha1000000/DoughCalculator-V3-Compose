@@ -1,10 +1,13 @@
 package com.easycook.doughcalculator.screens
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -59,6 +62,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Transparent
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
@@ -313,24 +317,34 @@ fun IngredientsTable(viewModel: RecipeViewModel, modifier: Modifier) {
         }
         if (!isNewRecipe && recipe.description.isNotBlank()) {
             val isDescriptionOpened = remember { mutableStateOf(false) }
+            val interactionSource = remember { MutableInteractionSource() }
+            val isPressed by interactionSource.collectIsPressedAsState()
+            val alpha by animateFloatAsState(
+                targetValue = if (isPressed) 0.5f else 1f,
+                label = "button alpha animation"
+            )
             OutlinedButton(
                 onClick = { isDescriptionOpened.value = !isDescriptionOpened.value },
                 modifier = Modifier
                     .wrapContentWidth()
                     .align(Alignment.End)
-                    .padding(end = 12.dp),
+                    .padding(end = 12.dp)
+                    .graphicsLayer { 
+                        this.alpha = alpha 
+                    },
                 border = BorderStroke(width = 0.4.dp, color = colorScheme.primary),
                 colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = colorResource(light_gray),
                     contentColor = colorScheme.primary,
-                )
+                ),
+                interactionSource = interactionSource
             ) {
                 Text(stringResource(R.string.text_field_description))
             }
             if (isDescriptionOpened.value) {
                 ModalBottomSheet(onDismissRequest = { isDescriptionOpened.value = false }) {
                     Column(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp),
                     ) {
                         Text(
                             text = recipe.description,
@@ -345,18 +359,30 @@ fun IngredientsTable(viewModel: RecipeViewModel, modifier: Modifier) {
         }
 
         Box(modifier = Modifier.fillMaxSize()) {
+            val interactionSource = remember { MutableInteractionSource() }
+            val isPressed by interactionSource.collectIsPressedAsState()
+            val scale by animateFloatAsState(
+                targetValue = if (isPressed) 0.95f else 1f,
+                label = "button scale animation"
+            )
+            
             Button(
                 onClick = { viewModel.onCalculationClick() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
-                    .padding(12.dp),
+                    .padding(12.dp)
+                    .graphicsLayer {
+                        scaleX = scale
+                        scaleY = scale
+                    },
                 contentPadding = PaddingValues(vertical = 16.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorScheme.primary,
                     contentColor = colorScheme.onSecondary,
                 ),
-                shape = RoundedCornerShape(20.dp)
+                shape = RoundedCornerShape(20.dp),
+                interactionSource = interactionSource
             ) {
                 Text(
                     text = stringResource(id = R.string.button_calculate_text),

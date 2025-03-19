@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.easycook.doughcalculator"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.easycook.doughcalculator"
@@ -91,6 +91,8 @@ dependencies {
     implementation(libs.androidx.material)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.animation)
+    implementation(libs.androidx.animation.core)
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.timber)
     testImplementation(libs.junit)

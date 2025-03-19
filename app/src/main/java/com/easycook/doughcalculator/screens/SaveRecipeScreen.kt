@@ -52,6 +52,10 @@ import com.easycook.doughcalculator.R.color.light_gray
 import com.easycook.doughcalculator.R.color.semi_gray
 import com.easycook.doughcalculator.R.color.text_gray
 import com.easycook.doughcalculator.RecipeViewModel
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.ui.graphics.graphicsLayer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,6 +68,9 @@ fun SaveRecipeScreen(
     val errorMessage by viewModel.errorMessage.collectAsState()
     var recipeName by remember { mutableStateOf(recipe.title) }
     var recipeDescription by remember { mutableStateOf(recipe.description) }
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(if (isPressed) 0.9f else 1.0f)
 
     Scaffold(
         topBar = {
@@ -164,14 +171,20 @@ fun SaveRecipeScreen(
                         }
                     },
                     enabled = recipeName.isNotEmpty(),
-                    modifier = Modifier.align(Alignment.End),
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .graphicsLayer {
+                            scaleX = scale
+                            scaleY = scale
+                        },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colorScheme.primary,
                         contentColor = colorScheme.onSecondary,
                         disabledContainerColor = colorResource(semi_gray),
                         disabledContentColor = colorResource(text_gray),
                     ),
-                    shape = RoundedCornerShape(20.dp)
+                    shape = RoundedCornerShape(20.dp),
+                    interactionSource = interactionSource
                 ) {
                     Text(
                         modifier = Modifier.padding(vertical = 6.dp),

@@ -15,6 +15,7 @@ hilt = "2.50"
 hiltNavigation = "1.2.0"
 accompanist = "0.32.0"
 timber = "5.0.1"
+compose-animation = "1.5.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -33,6 +34,8 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material = { group = "androidx.compose.material", name = "material" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "compose-animation" }
+androidx-animation-core = { group = "androidx.compose.animation", name = "animation-core", version.ref = "compose-animation" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
 accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist" }
 
