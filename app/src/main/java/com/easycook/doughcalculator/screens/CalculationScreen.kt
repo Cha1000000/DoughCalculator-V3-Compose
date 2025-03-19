@@ -77,7 +77,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.easycook.doughcalculator.R
 import com.easycook.doughcalculator.R.color.light_gray
@@ -87,6 +86,7 @@ import com.easycook.doughcalculator.R.color.text_orange
 import com.easycook.doughcalculator.R.color.text_red
 import com.easycook.doughcalculator.R.color.validation_text_color
 import com.easycook.doughcalculator.RecipeViewModel
+import com.easycook.doughcalculator.common.RECIPES_SCREEN
 import com.easycook.doughcalculator.common.SAVE_RECIPE_SCREEN
 import com.easycook.doughcalculator.common.ShowAlertDialog
 import com.easycook.doughcalculator.common.ShowConfirmDialog
@@ -111,11 +111,10 @@ fun CalculationScreen(
     }
 
     fun openRecipeList() {
-        navController.navigate(navController.graph.findStartDestination().route!!) {
-            popUpTo(navController.graph.findStartDestination().id) {
+        navController.navigate(RECIPES_SCREEN) {
+            popUpTo(navController.graph.id) {
                 inclusive = true
             }
-            launchSingleTop = true
         }
     }
 
