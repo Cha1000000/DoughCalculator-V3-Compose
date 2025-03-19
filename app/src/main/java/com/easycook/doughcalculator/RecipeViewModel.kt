@@ -9,7 +9,7 @@ import com.easycook.doughcalculator.common.Calculator
 import com.easycook.doughcalculator.common.formatToStringOrBlank
 import com.easycook.doughcalculator.common.toStringOrBlank
 import com.easycook.doughcalculator.database.DoughRecipeEntity
-import com.easycook.doughcalculator.database.DoughRecipesDatabase
+import com.easycook.doughcalculator.database.DoughRecipeRepository
 import com.easycook.doughcalculator.models.IngredientType
 import com.easycook.doughcalculator.models.IngredientUiItemModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +24,7 @@ import javax.inject.Inject
 import timber.log.Timber
 
 @HiltViewModel
-class RecipeViewModel @Inject constructor(private val database: DoughRecipesDatabase) :
+class RecipeViewModel @Inject constructor(private val repository: DoughRecipeRepository) :
     ViewModel() {
 
     private val calculator = Calculator()
@@ -58,18 +58,18 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
 
     init {
         viewModelScope.launch {
-            database.dao.getAllRecipes().collect { recipes ->
+            repository.getAllRecipes().collect { recipes ->
                 _recipes.value = recipes
             }
         }
     }
 
     fun updateRecipe(recipe: DoughRecipeEntity) = viewModelScope.launch(Dispatchers.IO) {
-        database.dao.update(recipe)
+        repository.updateRecipe(recipe)
     }
 
     fun deleteRecipe(recipe: DoughRecipeEntity) = viewModelScope.launch(Dispatchers.IO) {
-        database.dao.delete(recipe)
+        repository.deleteRecipe(recipe)
     }
 
     fun resetRecipe() {
@@ -303,7 +303,7 @@ class RecipeViewModel @Inject constructor(private val database: DoughRecipesData
         val isNewRecipe = recipe.recipeId == null
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                if (isNewRecipe) database.dao.insert(recipe) else database.dao.update(recipe)
+                if (isNewRecipe) repository.insertRecipe(recipe) else repository.updateRecipe(recipe)
                 // Очищаем сообщение об ошибке при успешном сохранении
                 _errorMessage.value = null
             } catch (e: Exception) {

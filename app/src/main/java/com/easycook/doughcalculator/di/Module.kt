@@ -2,6 +2,7 @@ package com.easycook.doughcalculator.di
 
 import android.app.Application
 import androidx.room.Room
+import com.easycook.doughcalculator.database.DoughRecipeRepository
 import com.easycook.doughcalculator.database.DoughRecipesDatabase
 import dagger.Module
 import dagger.Provides
@@ -24,4 +25,10 @@ object Module {
             .allowMainThreadQueries()
             .fallbackToDestructiveMigration()
             .build()
+    
+    @Provides
+    @Singleton
+    fun provideDoughRecipeRepository(database: DoughRecipesDatabase): DoughRecipeRepository {
+        return DoughRecipeRepository(database)
+    }
 }

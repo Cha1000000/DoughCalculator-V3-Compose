@@ -3,8 +3,9 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    alias(libs.plugins.ksp)
+    // alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    id("kotlin-kapt")
 }
 
 android {
@@ -19,8 +20,10 @@ android {
         versionCode = 1
         versionName = "3.2"
         archivesName = "DoughCalculator v$versionName"
-        ksp {
-            arg("room.schemaLocation", "$projectDir/schemas")
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
         }
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -54,7 +57,7 @@ android {
         buildConfig = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
+        kotlinCompilerExtensionVersion = "1.5.10"
     }
     packaging {
         resources {
@@ -65,7 +68,9 @@ android {
         kotlinOptions {
             freeCompilerArgs += listOf(
                 "-opt-in=kotlin.RequiresOptIn",
-                "-Xcontext-receivers"
+                "-Xcontext-receivers",
+                "-P",
+                "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=1.9.24"
             )
         }
     }
@@ -74,11 +79,11 @@ android {
 dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation)
-    ksp(libs.hilt.compiler)
+    kapt(libs.hilt.compiler)
 
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    ksp(libs.room.compiler)
+    kapt(libs.room.compiler)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
