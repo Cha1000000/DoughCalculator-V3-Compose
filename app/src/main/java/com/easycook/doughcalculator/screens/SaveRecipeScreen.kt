@@ -28,6 +28,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,7 +52,6 @@ import com.easycook.doughcalculator.R.color.light_gray
 import com.easycook.doughcalculator.R.color.semi_gray
 import com.easycook.doughcalculator.R.color.text_gray
 import com.easycook.doughcalculator.RecipeViewModel
-import com.easycook.doughcalculator.common.CALCULATION_SCREEN
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,8 +60,10 @@ fun SaveRecipeScreen(
     viewModel: RecipeViewModel
 ) {
     val focusManager = LocalFocusManager.current
-    var recipeName by remember { mutableStateOf(viewModel.recipeEntity.title) }
-    var recipeDescription by remember { mutableStateOf(viewModel.recipeEntity.description) }
+    val recipe by viewModel.recipeEntity.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
+    var recipeName by remember { mutableStateOf(recipe.title) }
+    var recipeDescription by remember { mutableStateOf(recipe.description) }
 
     Scaffold(
         topBar = {
@@ -155,9 +157,10 @@ fun SaveRecipeScreen(
                 )
                 Button(
                     onClick = {
+                        focusManager.clearFocus()
                         viewModel.onSaveClick(title = recipeName, description = recipeDescription)
-                        navController.navigate(CALCULATION_SCREEN) {
-                            launchSingleTop = true
+                        if (viewModel.errorMessage.value == null) {
+                            navController.navigateUp()
                         }
                     },
                     enabled = recipeName.isNotEmpty(),
@@ -176,6 +179,17 @@ fun SaveRecipeScreen(
                         style = typography.bodyLarge,
                         fontSize = 24.sp,
                         letterSpacing = 2.sp
+                    )
+                }
+
+                errorMessage?.let { error ->
+                    Text(
+                        text = error,
+                        color = colorScheme.error,
+                        style = typography.bodyMedium,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp)
                     )
                 }
             }

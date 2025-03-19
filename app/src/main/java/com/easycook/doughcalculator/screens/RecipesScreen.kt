@@ -127,7 +127,7 @@ fun RecipeItem(
         colors = CardDefaults.cardColors(cardBackground),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         onClick = {
-            viewModel.recipeEntity = item
+            viewModel.setRecipeEntity(item)
             viewModel.refreshSavedRecipeOriginalState()
             viewModel.resetIngredientTableRows()
             navController.navigate(CALCULATION_SCREEN) {

@@ -2,7 +2,10 @@
 plugins {
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.jetbrainsKotlinAndroid) apply false
-    //alias(libs.plugins.kapt) apply false
-    alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt) apply false
+    alias(libs.plugins.ksp) apply false
+}
+
+ext {
+    set("kotlin_version", "1.9.21")
 }

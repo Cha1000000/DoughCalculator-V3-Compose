@@ -48,6 +48,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -257,15 +258,15 @@ fun CalculationScreen(
 @SuppressLint("DefaultLocale", "UnrememberedMutableState")
 @Composable
 fun IngredientsTable(viewModel: RecipeViewModel, modifier: Modifier) {
-    val tableRows = viewModel.tableIngredientRows
-    val recipe = viewModel.recipeEntity
+    val tableRows by viewModel.tableIngredientRows.collectAsState()
+    val recipe by viewModel.recipeEntity.collectAsState()
     val isNewRecipe = recipe.recipeId == null
-    val isCalculateByWeight = viewModel.isCalculateByWeight
+    val isCalculateByWeight by viewModel.isCalculateByWeight.collectAsState()
     val showEmptyFlourError = viewModel.isFlourEmpty
     val showEmptySaltError = viewModel.isSaltEmpty
     val showEmptyWaterError = viewModel.isWaterEmpty
-    val showWaterValidationWarn = viewModel.isWaterValidationWarn
-    val showSaltValidationError = viewModel.isSaltValidationError
+    val isWaterValidationWarn by viewModel.isWaterValidationWarn.collectAsState()
+    val isSaltValidationError by viewModel.isSaltValidationError.collectAsState()
 
     Column(modifier = modifier) {
         if (!isNewRecipe) {
@@ -280,7 +281,10 @@ fun IngredientsTable(viewModel: RecipeViewModel, modifier: Modifier) {
                 color = colorScheme.onSurface,
             )
         }
-        CalculateByWeightOrPercentTableRow(isCalculateByWeight)
+        CalculateByWeightOrPercentTableRow(isCalculateByWeight) {
+            viewModel.toggleCalculationMode()
+            viewModel.saveCalculationState()
+        }
         TableTitle()
         LazyVerticalGrid(
             columns = GridCells.Fixed(1),
@@ -298,10 +302,10 @@ fun IngredientsTable(viewModel: RecipeViewModel, modifier: Modifier) {
                         isCalculateByWeight = isCalculateByWeight,
                         recipe = recipe,
                     ) { viewModel.onCalculationClick() }
-                    if (row.ingredient == IngredientType.Water && showWaterValidationWarn.value) {
+                    if (row.ingredient == IngredientType.Water && isWaterValidationWarn) {
                         ValidationRow(R.string.validation_water_range_recommended, false)
                     }
-                    if (row.ingredient == IngredientType.Salt && showSaltValidationError.value) {
+                    if (row.ingredient == IngredientType.Salt && isSaltValidationError) {
                         ValidationRow(R.string.validation_salt_invalid_range, true)
                     }
                 }
@@ -339,6 +343,7 @@ fun IngredientsTable(viewModel: RecipeViewModel, modifier: Modifier) {
                 }
             }
         }
+
         Box(modifier = Modifier.fillMaxSize()) {
             Button(
                 onClick = { viewModel.onCalculationClick() },
@@ -375,7 +380,7 @@ fun IngredientsTable(viewModel: RecipeViewModel, modifier: Modifier) {
             ShowAlertDialog(
                 isOpen = showEmptyWaterError,
                 titleId = R.string.alert_title_error,
-                messageId = if (isCalculateByWeight.value) {
+                messageId = if (isCalculateByWeight) {
                     R.string.error_invalid_water_gram_input
                 } else {
                     R.string.error_invalid_water_percent_input
@@ -386,7 +391,7 @@ fun IngredientsTable(viewModel: RecipeViewModel, modifier: Modifier) {
             ShowAlertDialog(
                 isOpen = showEmptySaltError,
                 titleId = R.string.alert_title_error,
-                messageId = if (isCalculateByWeight.value) {
+                messageId = if (isCalculateByWeight) {
                     R.string.error_invalid_salt_gram_input
                 } else {
                     R.string.error_invalid_salt_percent_input
@@ -397,7 +402,10 @@ fun IngredientsTable(viewModel: RecipeViewModel, modifier: Modifier) {
 }
 
 @Composable
-fun CalculateByWeightOrPercentTableRow(isCalculateByWeight: MutableState<Boolean>) {
+fun CalculateByWeightOrPercentTableRow(
+    isCalculateByWeight: Boolean,
+    onModeToggle: () -> Unit,
+) {
     val colors = RadioButtonColors(
         selectedColor = colorScheme.primary,
         unselectedColor = colorResource(text_orange),
@@ -420,14 +428,14 @@ fun CalculateByWeightOrPercentTableRow(isCalculateByWeight: MutableState<Boolean
             color = colorResource(text_orange)
         )
         RadioButton(
-            selected = isCalculateByWeight.value,
-            onClick = { isCalculateByWeight.value = true },
+            selected = isCalculateByWeight,
+            onClick = { onModeToggle() },
             modifier = Modifier.weight(1f),
             colors = colors
         )
         RadioButton(
-            selected = !isCalculateByWeight.value,
-            onClick = { isCalculateByWeight.value = false },
+            selected = !isCalculateByWeight,
+            onClick = { onModeToggle() },
             modifier = Modifier.weight(1f),
             colors = colors
         )
@@ -475,7 +483,7 @@ fun TableTitle() {
 @Composable
 fun IngredientRow(
     ingredientItem: IngredientUiItemModel,
-    isCalculateByWeight: MutableState<Boolean>,
+    isCalculateByWeight: Boolean,
     recipe: DoughRecipeEntity,
     onLastRowDone: () -> Unit,
 ) {
@@ -547,7 +555,7 @@ fun IngredientRow(
         ValueInput(
             modifier = Modifier.weight(1f),
             inputValue = ingredientItem.quantity,
-            isEnabled = if (ingredientItem.ingredient == IngredientType.Flour) true else isCalculateByWeight.value,
+            isEnabled = if (ingredientItem.ingredient == IngredientType.Flour) true else isCalculateByWeight,
             isWeight = true,
             isLastRow = ingredientItem.ingredient == IngredientType.Egg,
             onDoneClick = onLastRowDone,
@@ -555,7 +563,7 @@ fun IngredientRow(
         ValueInput(
             modifier = Modifier.weight(0.8f),
             inputValue = ingredientItem.percent,
-            isEnabled = if (ingredientItem.ingredient == IngredientType.Flour) false else !isCalculateByWeight.value,
+            isEnabled = if (ingredientItem.ingredient == IngredientType.Flour) false else !isCalculateByWeight,
             isWeight = false,
             isLastRow = ingredientItem.ingredient == IngredientType.Egg,
             onDoneClick = onLastRowDone,
@@ -563,7 +571,7 @@ fun IngredientRow(
         ValueInput(
             modifier = Modifier.weight(1f),
             inputValue = ingredientItem.correction,
-            isEnabled = ingredientItem.ingredient == IngredientType.Flour/* && isCalculateByWeight.value*/,
+            isEnabled = ingredientItem.ingredient == IngredientType.Flour/* && isCalculateByWeight*/,
             isWeight = true,
             isLastRow = recipe.waterGram != 0 && recipe.saltGram != 0,
             onDoneClick = onLastRowDone,
