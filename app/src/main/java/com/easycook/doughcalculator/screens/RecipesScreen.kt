@@ -53,6 +53,10 @@ import com.easycook.doughcalculator.RecipeViewModel
 import com.easycook.doughcalculator.common.CALCULATION_SCREEN
 import com.easycook.doughcalculator.common.ShowConfirmDialog
 import com.easycook.doughcalculator.database.DoughRecipeEntity
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.ui.graphics.graphicsLayer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -119,13 +123,26 @@ fun RecipeItem(
     val cardBackground = colorScheme.surface
     var isFavorite by remember { mutableStateOf(item.isFavorite) }
     val openDialog = rememberSaveable { mutableStateOf(false) }
+    
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.95f else 1f,
+        label = "card scale animation"
+    )
+    
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 6.dp, horizontal = 4.dp),
+            .padding(vertical = 6.dp, horizontal = 4.dp)
+            .graphicsLayer { 
+                scaleX = scale
+                scaleY = scale
+            },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(cardBackground),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        interactionSource = interactionSource,
         onClick = {
             viewModel.setRecipeEntity(item)
             viewModel.refreshSavedRecipeOriginalState()
@@ -143,26 +160,54 @@ fun RecipeItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = {
-                isFavorite = !isFavorite
-                item.isFavorite = isFavorite
-                viewModel.updateRecipe(item)
-            }) {
+            val favoriteInteractionSource = remember { MutableInteractionSource() }
+            val isFavoritePressed by favoriteInteractionSource.collectIsPressedAsState()
+            val favoriteScale by animateFloatAsState(
+                targetValue = if (isFavoritePressed) 0.8f else 1f,
+                label = "favorite button scale animation"
+            )
+            
+            IconButton(
+                onClick = {
+                    isFavorite = !isFavorite
+                    item.isFavorite = isFavorite
+                    viewModel.updateRecipe(item)
+                },
+                interactionSource = favoriteInteractionSource,
+                modifier = Modifier.graphicsLayer {
+                    scaleX = favoriteScale
+                    scaleY = favoriteScale
+                }
+            ) {
                 Icon(
-                    /*painter = if (isFavorite) painterResource(id = R.drawable.ic_favorite_filled)
-                    else painterResource(id = R.drawable.ic_favorite_border),*/
                     imageVector = if (!isFavorite) Icons.Filled.FavoriteBorder else Icons.Filled.Favorite,
                     contentDescription = "IsFavourite",
                     tint = if (isFavorite) colorScheme.tertiary else colorScheme.primary,
                 )
             }
+            
             Text(
                 modifier = Modifier.weight(1f),
                 text = item.title,
                 fontSize = 20.sp,
                 textAlign = TextAlign.Start
             )
-            IconButton(onClick = { openDialog.value = true }) {
+            
+            val deleteInteractionSource = remember { MutableInteractionSource() }
+            val isDeletePressed by deleteInteractionSource.collectIsPressedAsState()
+            val deleteScale by animateFloatAsState(
+                targetValue = if (isDeletePressed) 0.8f else 1f,
+                label = "delete button scale animation"
+            )
+            
+            IconButton(
+                onClick = { openDialog.value = true },
+                interactionSource = deleteInteractionSource,
+                modifier = Modifier.graphicsLayer {
+                    scaleX = deleteScale
+                    scaleY = deleteScale
+                }
+            ) {
                 Icon(
                     modifier = Modifier.size(32.dp),
                     imageVector = Icons.Filled.Delete,
@@ -187,8 +232,20 @@ fun RecipeItem(
 
 @Composable
 fun AddRecipeButton(navController: NavHostController, viewModel: RecipeViewModel) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.9f else 1f,
+        label = "button scale animation"
+    )
+    
     FloatingActionButton(
-        modifier = Modifier.padding(vertical = 8.dp),
+        modifier = Modifier
+            .padding(vertical = 8.dp)
+            .graphicsLayer { 
+                scaleX = scale
+                scaleY = scale
+            },
         onClick = {
             viewModel.resetRecipe()
             viewModel.resetIngredientTableRows()
@@ -199,6 +256,7 @@ fun AddRecipeButton(navController: NavHostController, viewModel: RecipeViewModel
         shape = CircleShape,
         containerColor = colorScheme.primary,
         contentColor = colorScheme.onSecondary,
+        interactionSource = interactionSource
     ) {
         Icon(
             imageVector = Icons.Filled.Add,
