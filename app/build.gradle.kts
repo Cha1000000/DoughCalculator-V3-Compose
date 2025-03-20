@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    // alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     id("kotlin-kapt")
 }
@@ -57,7 +56,7 @@ android {
         buildConfig = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.10"
+        kotlinCompilerExtensionVersion = "1.5.14"
     }
     packaging {
         resources {
@@ -68,9 +67,7 @@ android {
         kotlinOptions {
             freeCompilerArgs += listOf(
                 "-opt-in=kotlin.RequiresOptIn",
-                "-Xcontext-receivers",
-                "-P",
-                "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=1.9.24"
+                "-Xcontext-receivers"
             )
         }
     }

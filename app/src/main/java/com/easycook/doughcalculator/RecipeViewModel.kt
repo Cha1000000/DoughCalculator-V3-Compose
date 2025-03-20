@@ -23,6 +23,12 @@ import java.util.Locale
 import javax.inject.Inject
 import timber.log.Timber
 
+/**
+ * ViewModel для управления рецептами теста.
+ * Обеспечивает функциональность создания, редактирования, расчета и сохранения рецептов.
+ *
+ * @property repository Репозиторий для доступа к данным рецептов
+ */
 @HiltViewModel
 class RecipeViewModel @Inject constructor(private val repository: DoughRecipeRepository) :
     ViewModel() {
@@ -36,25 +42,25 @@ class RecipeViewModel @Inject constructor(private val repository: DoughRecipeRep
 
     private val _isCalculateByWeight = MutableStateFlow(true)
     val isCalculateByWeight: StateFlow<Boolean> = _isCalculateByWeight.asStateFlow()
-
+    
+    private val _isWaterValidationWarn = MutableStateFlow(false)
+    val isWaterValidationWarn: StateFlow<Boolean> = _isWaterValidationWarn.asStateFlow()
+    
+    private val _isSaltValidationError = MutableStateFlow(false)
+    val isSaltValidationError: StateFlow<Boolean> = _isSaltValidationError.asStateFlow()
+    
+    private val _tableIngredientRows = MutableStateFlow(createIngredientTableRows())
+    val tableIngredientRows: StateFlow<List<IngredientUiItemModel>> = _tableIngredientRows.asStateFlow()
+    
+    private val _recipes = MutableStateFlow<List<DoughRecipeEntity>>(emptyList())
+    val recipes: StateFlow<List<DoughRecipeEntity>> = _recipes.asStateFlow()
+    
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+    
     val isFlourEmpty = mutableStateOf(false)
     val isSaltEmpty = mutableStateOf(false)
     val isWaterEmpty = mutableStateOf(false)
-
-    private val _isWaterValidationWarn = MutableStateFlow(false)
-    val isWaterValidationWarn: StateFlow<Boolean> = _isWaterValidationWarn.asStateFlow()
-
-    private val _isSaltValidationError = MutableStateFlow(false)
-    val isSaltValidationError: StateFlow<Boolean> = _isSaltValidationError.asStateFlow()
-
-    private val _tableIngredientRows = MutableStateFlow(createIngredientTableRows())
-    val tableIngredientRows: StateFlow<List<IngredientUiItemModel>> = _tableIngredientRows.asStateFlow()
-
-    private val _recipes = MutableStateFlow<List<DoughRecipeEntity>>(emptyList())
-    val recipes: StateFlow<List<DoughRecipeEntity>> = _recipes.asStateFlow()
-
-    private val _errorMessage = MutableStateFlow<String?>(null)
-    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -64,23 +70,46 @@ class RecipeViewModel @Inject constructor(private val repository: DoughRecipeRep
         }
     }
 
+    /**
+     * Обновляет существующий рецепт в базе данных.
+     *
+     * @param recipe Рецепт для обновления
+     */
     fun updateRecipe(recipe: DoughRecipeEntity) = viewModelScope.launch(Dispatchers.IO) {
         repository.updateRecipe(recipe)
     }
 
+    /**
+     * Удаляет рецепт из базы данных.
+     *
+     * @param recipe Рецепт для удаления
+     */
     fun deleteRecipe(recipe: DoughRecipeEntity) = viewModelScope.launch(Dispatchers.IO) {
         repository.deleteRecipe(recipe)
     }
 
+    /**
+     * Сбрасывает текущий рецепт до начального состояния.
+     * Создает новый пустой рецепт.
+     */
     fun resetRecipe() {
         _recipeEntity.value = DoughRecipeEntity()
         savedRecipeOriginal = _recipeEntity.value.copy()
     }
 
+    /**
+     * Сбрасывает строки таблицы ингредиентов до начального состояния.
+     * Используется при создании нового рецепта или сбросе текущего.
+     */
     fun resetIngredientTableRows() {
         _tableIngredientRows.value = createIngredientTableRows()
     }
 
+    /**
+     * Создает список строк таблицы ингредиентов на основе текущего рецепта.
+     * 
+     * @return Список моделей ингредиентов для отображения в UI
+     */
     private fun createIngredientTableRows(): List<IngredientUiItemModel> {
         val recipe = _recipeEntity.value
         val isNewRecipe = recipe.recipeId == null
@@ -126,6 +155,10 @@ class RecipeViewModel @Inject constructor(private val repository: DoughRecipeRep
         )
     }
 
+    /**
+     * Обновляет строки таблицы ингредиентов на основе текущего рецепта.
+     * Вызывается после изменения значений рецепта для синхронизации UI.
+     */
     private fun updateIngredientTableRows() {
         val recipe = _recipeEntity.value
         val ingredientData = listOf(
@@ -152,12 +185,23 @@ class RecipeViewModel @Inject constructor(private val repository: DoughRecipeRep
         _tableIngredientRows.value = updatedRows
     }
 
-    // Хелпер, чтобы создать TextFieldValue c курсором в конце
+    /**
+     * Создает объект TextFieldValue с курсором в конце текста.
+     * 
+     * @param text Текст для поля ввода
+     * @return TextFieldValue с указанным текстом и курсором в конце
+     */
     private fun createTextFieldValue(text: String): TextFieldValue {
         val length = text.length
         return TextFieldValue(text, TextRange(length))
     }
 
+    /**
+     * Обрабатывает нажатие кнопки расчета.
+     * Выполняет расчеты ингредиентов в зависимости от выбранного режима (по весу или по проценту).
+     * Проверяет наличие обязательных ингредиентов (мука, вода, соль).
+     * Обновляет UI после расчетов.
+     */
     fun onCalculationClick() {
         if (_recipeEntity.value.flourGram == 0) {
             isFlourEmpty.value = true
@@ -231,6 +275,9 @@ class RecipeViewModel @Inject constructor(private val repository: DoughRecipeRep
         saveCalculationState()
     }
 
+    /**
+     * Пересчитывает граммы ингредиентов с учетом корректировки муки.
+     */
     private fun recalculateGrams() {
         if (_recipeEntity.value.flourGramCorrection > 0) {
             val flourGramCorrection = _recipeEntity.value.flourGramCorrection
@@ -285,19 +332,29 @@ class RecipeViewModel @Inject constructor(private val repository: DoughRecipeRep
     }
 
     /**
-     * Сохранение состояния последних расчётов
+     * Сохранение состояния последних расчётов.
+     * Создает копию текущего рецепта для отслеживания изменений.
      */
     fun saveCalculationState() {
         previousRecipeCalculation = _recipeEntity.value.copy()
     }
 
     /**
-     * Переключение режима расчётов (вес/процент)
+     * Переключение режима расчётов между весом и процентами.
+     * В режиме веса расчет выполняется от граммов к процентам.
+     * В режиме процентов расчет выполняется от процентов к граммам.
      */
     fun toggleCalculationMode() {
         _isCalculateByWeight.value = !_isCalculateByWeight.value
     }
 
+    /**
+     * Обрабатывает нажатие кнопки сохранения рецепта.
+     * Сохраняет рецепт в базе данных и обновляет текущее состояние.
+     *
+     * @param title Название рецепта
+     * @param description Описание рецепта
+     */
     fun onSaveClick(title: String, description: String) {
         val recipe = _recipeEntity.value.copy(title = title, description = description)
         val isNewRecipe = recipe.recipeId == null
@@ -327,14 +384,30 @@ class RecipeViewModel @Inject constructor(private val repository: DoughRecipeRep
         }
     }
 
+    /**
+     * Проверяет, есть ли несохраненные изменения в текущем рецепте.
+     * Сравнивает текущий рецепт с его сохраненной копией.
+     *
+     * @return true, если есть несохраненные изменения, иначе false
+     */
     fun hasUnsavedChanges(): Boolean {
         return _recipeEntity.value != savedRecipeOriginal
     }
 
+    /**
+     * Обновляет сохраненное состояние рецепта.
+     * Используется для сброса состояния отслеживания изменений.
+     */
     fun refreshSavedRecipeOriginalState() {
         savedRecipeOriginal = _recipeEntity.value.copy()
     }
 
+    /**
+     * Устанавливает новый рецепт как текущий.
+     * Используется при выборе рецепта из списка для редактирования.
+     *
+     * @param recipe Выбранный рецепт для установки
+     */
     fun setRecipeEntity(recipe: DoughRecipeEntity) {
         _recipeEntity.value = recipe
     }
