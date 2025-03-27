@@ -1,0 +1,23 @@
+plugins {
+    kotlin("multiplatform")
+    id("org.jetbrains.compose")
+}
+
+kotlin {
+    js(IR) {
+        browser()
+    }
+    sourceSets {
+        val jsMain by getting {
+            dependencies {
+                implementation(project(":shared"))
+                implementation(compose.html.core)
+                implementation(compose.runtime)
+            }
+        }
+    }
+}
+
+compose.experimental {
+    web.application {}
+} 

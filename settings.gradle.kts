@@ -1,35 +1,29 @@
 pluginManagement {
     repositories {
-        google {
-            content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
-            }
-        }
-        mavenCentral()
-        mavenLocal()
         gradlePluginPortal()
-    }
-    resolutionStrategy {
-        eachPlugin {
-            if (requested.id.id == "com.google.devtools.ksp") {
-                useModule("com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:${requested.version}")
-            }
-        }
-    }
-}
-
-@Suppress("UnstableApiUsage")
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
         google()
-        mavenCentral()
-        mavenLocal()
+    }
+
+    plugins {
+        val kotlinVersion = "1.9.20"
+        val composeVersion = "1.6.0"
+        
+        kotlin("jvm").version(kotlinVersion)
+        kotlin("multiplatform").version(kotlinVersion)
+        kotlin("plugin.serialization").version(kotlinVersion)
+        id("org.jetbrains.compose").version(composeVersion)
     }
 }
 
-rootProject.name = "DoughCalculator Compose"
-include(":app")
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        google()
+    }
+}
+
+rootProject.name = "DoughCalculator"
+include(":shared", ":desktopApp")
  

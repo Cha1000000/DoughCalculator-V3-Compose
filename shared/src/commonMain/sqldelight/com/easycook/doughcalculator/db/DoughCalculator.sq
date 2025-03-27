@@ -1,0 +1,43 @@
+CREATE TABLE Recipe (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    flour_weight REAL NOT NULL,
+    water_percentage REAL NOT NULL,
+    salt_percentage REAL NOT NULL,
+    yeast_percentage REAL NOT NULL,
+    oil_percentage REAL NOT NULL,
+    sugar_percentage REAL NOT NULL,
+    created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+    updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
+);
+
+insertRecipe:
+INSERT INTO Recipe (
+    name, flour_weight, water_percentage, salt_percentage,
+    yeast_percentage, oil_percentage, sugar_percentage
+)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+updateRecipe:
+UPDATE Recipe
+SET name = ?,
+    flour_weight = ?,
+    water_percentage = ?,
+    salt_percentage = ?,
+    yeast_percentage = ?,
+    oil_percentage = ?,
+    sugar_percentage = ?,
+    updated_at = strftime('%s', 'now')
+WHERE id = ?;
+
+deleteRecipe:
+DELETE FROM Recipe WHERE id = ?;
+
+selectAllRecipes:
+SELECT * FROM Recipe ORDER BY updated_at DESC;
+
+selectRecipeById:
+SELECT * FROM Recipe WHERE id = ?;
+
+lastInsertRowId:
+SELECT last_insert_rowid(); 

@@ -1,0 +1,187 @@
+package com.easycook.doughcalculator.ui.screens
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.easycook.doughcalculator.models.DoughRecipe
+import com.easycook.doughcalculator.models.IngredientType
+import com.easycook.doughcalculator.viewmodel.RecipeViewModel
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CalculatorScreen(
+    viewModel: RecipeViewModel,
+    recipe: DoughRecipe? = null,
+    onNavigateBack: () -> Unit
+) {
+    var showSaveDialog by remember { mutableStateOf(false) }
+    var recipeName by remember { mutableStateOf(recipe?.name ?: "") }
+    var recipeDescription by remember { mutableStateOf(recipe?.description ?: "") }
+
+    val ingredients by viewModel.ingredients.collectAsState()
+    val isCalculateByWeight by viewModel.isCalculateByWeight.collectAsState()
+
+    LaunchedEffect(recipe) {
+        if (recipe != null) {
+            viewModel.loadRecipe(recipe)
+        } else {
+            viewModel.resetRecipe()
+        }
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize().padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        TopAppBar(
+            title = { Text(if (recipe == null) "Новый рецепт" else "Редактирование рецепта") },
+            navigationIcon = {
+                IconButton(onClick = onNavigateBack) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Назад")
+                }
+            }
+        )
+
+        // Переключатель режима расчёта
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Режим расчёта:")
+            Row {
+                RadioButton(
+                    selected = isCalculateByWeight,
+                    onClick = { viewModel.setCalculationMode(true) }
+                )
+                Text("По весу", modifier = Modifier.padding(start = 4.dp))
+                Spacer(Modifier.width(16.dp))
+                RadioButton(
+                    selected = !isCalculateByWeight,
+                    onClick = { viewModel.setCalculationMode(false) }
+                )
+                Text("По процентам", modifier = Modifier.padding(start = 4.dp))
+            }
+        }
+
+        // Заголовки столбцов
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("Ингредиент", modifier = Modifier.weight(0.25f))
+            Text("Граммы", modifier = Modifier.weight(0.25f))
+            Text("Проценты", modifier = Modifier.weight(0.25f))
+            Text("Корректировка", modifier = Modifier.weight(0.25f))
+        }
+
+        // Список ингредиентов
+        ingredients.forEach { ingredient ->
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = when (ingredient.ingredient) {
+                        IngredientType.Flour -> "Мука"
+                        IngredientType.Water -> "Вода"
+                        IngredientType.Salt -> "Соль"
+                        IngredientType.Sugar -> "Сахар"
+                        IngredientType.Butter -> "Масло"
+                        IngredientType.Yeast -> "Дрожжи"
+                        IngredientType.Milk -> "Молоко"
+                        IngredientType.Egg -> "Яйца"
+                    },
+                    modifier = Modifier.weight(0.25f)
+                )
+
+                OutlinedTextField(
+                    value = ingredient.quantity,
+                    onValueChange = { value ->
+                        viewModel.updateIngredient(ingredient.ingredient, value, true)
+                    },
+                    enabled = isCalculateByWeight || ingredient.ingredient == IngredientType.Flour,
+                    modifier = Modifier.weight(0.25f),
+                    singleLine = true
+                )
+
+                OutlinedTextField(
+                    value = ingredient.percent,
+                    onValueChange = { value ->
+                        viewModel.updateIngredient(ingredient.ingredient, value, false)
+                    },
+                    enabled = !isCalculateByWeight && ingredient.ingredient != IngredientType.Flour,
+                    modifier = Modifier.weight(0.25f),
+                    singleLine = true
+                )
+
+                OutlinedTextField(
+                    value = ingredient.correction,
+                    onValueChange = { value ->
+                        viewModel.updateCorrection(ingredient.ingredient, value)
+                    },
+                    enabled = ingredient.ingredient == IngredientType.Flour,
+                    modifier = Modifier.weight(0.25f),
+                    singleLine = true
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = { showSaveDialog = true },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(if (recipe == null) "Сохранить рецепт" else "Обновить рецепт")
+        }
+    }
+
+    if (showSaveDialog) {
+        AlertDialog(
+            onDismissRequest = { showSaveDialog = false },
+            title = { Text(if (recipe == null) "Сохранить рецепт" else "Обновить рецепт") },
+            text = {
+                Column {
+                    OutlinedTextField(
+                        value = recipeName,
+                        onValueChange = { recipeName = it },
+                        label = { Text("Название рецепта") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = recipeDescription,
+                        onValueChange = { recipeDescription = it },
+                        label = { Text("Описание (необязательно)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        minLines = 3
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.saveRecipe(recipeName, recipeDescription)
+                        showSaveDialog = false
+                        onNavigateBack()
+                    },
+                    enabled = recipeName.isNotBlank()
+                ) {
+                    Text(if (recipe == null) "Сохранить" else "Обновить")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showSaveDialog = false }) {
+                    Text("Отмена")
+                }
+            }
+        )
+    }
+} 
