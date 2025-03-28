@@ -1,7 +1,5 @@
 package com.easycook.doughcalculator.models
 
-import com.easycook.doughcalculator.models.IngredientType
-
 data class IngredientUiModel(
     val ingredient: IngredientType,
     val quantity: String = "",

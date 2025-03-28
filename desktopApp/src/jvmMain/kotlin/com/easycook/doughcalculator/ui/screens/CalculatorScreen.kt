@@ -35,11 +35,11 @@ fun CalculatorScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier.fillMaxSize().padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TopAppBar(
-            title = { Text(if (recipe == null) "Новый рецепт" else "Редактирование рецепта") },
+            title = { Text(recipe?.name ?: "Новый рецепт") },
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, "Назад")
@@ -50,22 +50,22 @@ fun CalculatorScreen(
         // Переключатель режима расчёта
         Row(
             modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text("Режим расчёта:")
-            Row {
+            Row(modifier = Modifier.padding(start = 16.dp)) {
                 RadioButton(
                     selected = isCalculateByWeight,
                     onClick = { viewModel.setCalculationMode(true) }
                 )
-                Text("По весу", modifier = Modifier.padding(start = 4.dp))
+                Text("По весу", modifier = Modifier.align(Alignment.CenterVertically))
                 Spacer(Modifier.width(16.dp))
                 RadioButton(
                     selected = !isCalculateByWeight,
                     onClick = { viewModel.setCalculationMode(false) }
                 )
-                Text("По процентам", modifier = Modifier.padding(start = 4.dp))
+                Text("По процентам", modifier = Modifier.align(Alignment.CenterVertically))
             }
         }
 
@@ -74,10 +74,10 @@ fun CalculatorScreen(
             modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Ингредиент", modifier = Modifier.weight(0.25f))
+            Text("Ингредиент", modifier = Modifier.weight(0.20f))
             Text("Граммы", modifier = Modifier.weight(0.25f))
             Text("Проценты", modifier = Modifier.weight(0.25f))
-            Text("Корректировка", modifier = Modifier.weight(0.25f))
+            Text("Коррекция", modifier = Modifier.weight(0.25f))
         }
 
         // Список ингредиентов
@@ -98,7 +98,7 @@ fun CalculatorScreen(
                         IngredientType.Milk -> "Молоко"
                         IngredientType.Egg -> "Яйца"
                     },
-                    modifier = Modifier.weight(0.25f)
+                    modifier = Modifier.weight(0.20f)
                 )
 
                 OutlinedTextField(
@@ -107,9 +107,11 @@ fun CalculatorScreen(
                         viewModel.updateIngredient(ingredient.ingredient, value, true)
                     },
                     enabled = isCalculateByWeight || ingredient.ingredient == IngredientType.Flour,
-                    modifier = Modifier.weight(0.25f),
+                    modifier = Modifier.weight(0.24f),
                     singleLine = true
                 )
+
+                Spacer(modifier = Modifier.weight(0.01f))
 
                 OutlinedTextField(
                     value = ingredient.percent,
@@ -117,9 +119,11 @@ fun CalculatorScreen(
                         viewModel.updateIngredient(ingredient.ingredient, value, false)
                     },
                     enabled = !isCalculateByWeight && ingredient.ingredient != IngredientType.Flour,
-                    modifier = Modifier.weight(0.25f),
+                    modifier = Modifier.weight(0.24f),
                     singleLine = true
                 )
+
+                Spacer(modifier = Modifier.weight(0.01f))
 
                 OutlinedTextField(
                     value = ingredient.correction,

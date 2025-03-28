@@ -50,10 +50,10 @@ class RecipeViewModel(
     }
 
     private fun createDefaultIngredients(): List<IngredientUiModel> {
-        return IngredientType.values().map { type ->
+        return IngredientType.entries.map { type ->
             IngredientUiModel(
                 ingredient = type,
-                quantity = if (type == IngredientType.Flour) "100" else "",
+                quantity = "",
                 percent = if (type == IngredientType.Flour) "100" else "",
                 correction = ""
             )
@@ -206,7 +206,7 @@ class RecipeViewModel(
             id = currentRecipe?.id,
             name = name,
             description = description,
-            isFavorite = currentRecipe?.isFavorite ?: false,
+            isFavorite = currentRecipe?.isFavorite == false,
             flourGram = _ingredients.value.find { it.ingredient == IngredientType.Flour }?.quantity?.toIntOrNull() ?: 0,
             waterGram = _ingredients.value.find { it.ingredient == IngredientType.Water }?.quantity?.toIntOrNull() ?: 0,
             saltGram = _ingredients.value.find { it.ingredient == IngredientType.Salt }?.quantity?.toIntOrNull() ?: 0,
