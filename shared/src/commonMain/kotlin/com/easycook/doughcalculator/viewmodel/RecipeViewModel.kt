@@ -4,6 +4,7 @@ import com.easycook.doughcalculator.models.DoughRecipe
 import com.easycook.doughcalculator.models.IngredientType
 import com.easycook.doughcalculator.models.IngredientUiModel
 import com.easycook.doughcalculator.repository.DoughRecipeRepository
+import com.easycook.doughcalculator.calculator.Calculator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 class RecipeViewModel(
     private val repository: DoughRecipeRepository
 ) {
+    private val calculator = Calculator()
     private val scope = CoroutineScope(Dispatchers.Main)
     private val _ingredients = MutableStateFlow(createDefaultIngredients())
     val ingredients: StateFlow<List<IngredientUiModel>> = _ingredients.asStateFlow()
@@ -24,6 +26,12 @@ class RecipeViewModel(
 
     private val _isCalculateByWeight = MutableStateFlow(true)
     val isCalculateByWeight: StateFlow<Boolean> = _isCalculateByWeight.asStateFlow()
+
+    private val _isWaterValidationWarn = MutableStateFlow(false)
+    val isWaterValidationWarn: StateFlow<Boolean> = _isWaterValidationWarn.asStateFlow()
+    
+    private val _isSaltValidationError = MutableStateFlow(false)
+    val isSaltValidationError: StateFlow<Boolean> = _isSaltValidationError.asStateFlow()
 
     private var currentRecipe: DoughRecipe? = null
 
@@ -71,47 +79,49 @@ class RecipeViewModel(
             IngredientUiModel(
                 ingredient = IngredientType.Water,
                 quantity = recipe.waterGram.toString(),
-                percent = recipe.waterPercent.toString(),
+                percent = recipe.waterPercent.toStringOrEmpty(),
                 correction = recipe.waterGramCorrection.toString()
             ),
             IngredientUiModel(
                 ingredient = IngredientType.Salt,
                 quantity = recipe.saltGram.toString(),
-                percent = recipe.saltPercent.toString(),
+                percent = recipe.saltPercent.toStringOrEmpty(),
                 correction = recipe.saltGramCorrection.toString()
             ),
             IngredientUiModel(
                 ingredient = IngredientType.Sugar,
                 quantity = recipe.sugarGram.toString(),
-                percent = recipe.sugarPercent.toString(),
+                percent = recipe.sugarPercent.toStringOrEmpty(),
                 correction = recipe.sugarGramCorrection.toString()
             ),
             IngredientUiModel(
                 ingredient = IngredientType.Butter,
                 quantity = recipe.butterGram.toString(),
-                percent = recipe.butterPercent.toString(),
+                percent = recipe.butterPercent.toStringOrEmpty(),
                 correction = recipe.butterGramCorrection.toString()
             ),
             IngredientUiModel(
                 ingredient = IngredientType.Yeast,
                 quantity = recipe.yeastGram.toString(),
-                percent = recipe.yeastPercent.toString(),
+                percent = recipe.yeastPercent.toStringOrEmpty(),
                 correction = recipe.yeastGramCorrection.toString()
             ),
             IngredientUiModel(
                 ingredient = IngredientType.Milk,
                 quantity = recipe.milkGram.toString(),
-                percent = recipe.milkPercent.toString(),
+                percent = recipe.milkPercent.toStringOrEmpty(),
                 correction = recipe.milkGramCorrection.toString()
             ),
             IngredientUiModel(
                 ingredient = IngredientType.Egg,
                 quantity = recipe.eggGram.toString(),
-                percent = recipe.eggPercent.toString(),
+                percent = recipe.eggPercent.toStringOrEmpty(),
                 correction = recipe.eggGramCorrection.toString()
             )
         )
     }
+
+    private fun Double.toStringOrEmpty(): String = if (this > 0.0) this.toString() else ""
 
     fun setCalculationMode(isWeight: Boolean) {
         _isCalculateByWeight.value = isWeight
@@ -152,6 +162,16 @@ class RecipeViewModel(
             calculateWeights()
         }
         applyCorrections()
+        
+        // Валидация процентов воды и соли
+        val water = _ingredients.value.find { it.ingredient == IngredientType.Water }
+        val salt = _ingredients.value.find { it.ingredient == IngredientType.Salt }
+
+        val waterPercent = water?.percent?.toDoubleOrNull()
+        val saltPercent = salt?.percent?.toDoubleOrNull()
+
+        _isWaterValidationWarn.value = waterPercent?.let { !calculator.isWaterPercentValid(it) } == true
+        _isSaltValidationError.value = saltPercent?.let { !calculator.isSaltPercentValid(it) } == true
     }
 
     private fun calculatePercentages() {
@@ -161,7 +181,7 @@ class RecipeViewModel(
         val updatedIngredients = _ingredients.value.map { ingredient ->
             if (ingredient.ingredient != IngredientType.Flour) {
                 val weight = ingredient.quantity.toDoubleOrNull() ?: 0.0
-                ingredient.copy(percent = ((weight / flourWeight) * 100).toString())
+                ingredient.copy(percent = ((weight / flourWeight) * 100).toStringOrEmpty())
             } else {
                 ingredient
             }

@@ -2,9 +2,8 @@ package com.easycook.doughcalculator.calculator
 
 class Calculator {
     companion object {
-        private const val MIN_WATER_PERCENT = 50.0
-        private const val MAX_WATER_PERCENT = 75.0
-        private const val MIN_SALT_PERCENT = 1.0
+        private const val MIN_WATER_PERCENT = 59.5
+        private const val MAX_WATER_PERCENT = 80.0
         private const val MAX_SALT_PERCENT = 2.5
     }
 
@@ -32,14 +31,11 @@ class Calculator {
     /**
      * Проверяет, находится ли процент воды в рекомендуемом диапазоне
      */
-    fun isWaterPercentValid(waterPercent: Double): Boolean {
-        return waterPercent in MIN_WATER_PERCENT..MAX_WATER_PERCENT
-    }
+    fun isWaterPercentValid(waterPercent: Double) =
+        waterPercent in MIN_WATER_PERCENT..MAX_WATER_PERCENT
 
     /**
      * Проверяет, находится ли процент соли в допустимом диапазоне
      */
-    fun isSaltPercentValid(saltPercent: Double): Boolean {
-        return saltPercent in MIN_SALT_PERCENT..MAX_SALT_PERCENT
-    }
+    fun isSaltPercentValid(saltPercent: Double) = saltPercent <= MAX_SALT_PERCENT
 } 

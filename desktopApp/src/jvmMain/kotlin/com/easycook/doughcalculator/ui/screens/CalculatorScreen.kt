@@ -25,6 +25,8 @@ fun CalculatorScreen(
 
     val ingredients by viewModel.ingredients.collectAsState()
     val isCalculateByWeight by viewModel.isCalculateByWeight.collectAsState()
+    val isWaterValidationWarn by viewModel.isWaterValidationWarn.collectAsState()
+    val isSaltValidationError by viewModel.isSaltValidationError.collectAsState()
 
     LaunchedEffect(recipe) {
         if (recipe != null) {
@@ -133,6 +135,24 @@ fun CalculatorScreen(
                     enabled = ingredient.ingredient == IngredientType.Flour,
                     modifier = Modifier.weight(0.25f),
                     singleLine = true
+                )
+            }
+
+            // Отображение предупреждений валидации под полями ввода
+            if (ingredient.ingredient == IngredientType.Water && isWaterValidationWarn) {
+                Text(
+                    text = "⚠️ Рекомендуемая норма воды: 60–80%",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.fillMaxWidth().padding(start = 8.dp)
+                )
+            }
+            if (ingredient.ingredient == IngredientType.Salt && isSaltValidationError) {
+                Text(
+                    text = "❗️ Допустимая норма соли - не более 2,5%",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.fillMaxWidth().padding(start = 8.dp)
                 )
             }
         }
