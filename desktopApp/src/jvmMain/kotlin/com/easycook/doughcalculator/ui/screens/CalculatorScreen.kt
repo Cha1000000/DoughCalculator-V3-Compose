@@ -160,6 +160,31 @@ fun CalculatorScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Отображение описания рецепта
+        recipe?.description?.takeIf { it.isNotBlank() }?.let { description ->
+            Surface(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = Strings.Recipe.DESCRIPTION,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Button(
             onClick = { showSaveDialog = true },
             modifier = Modifier.fillMaxWidth()

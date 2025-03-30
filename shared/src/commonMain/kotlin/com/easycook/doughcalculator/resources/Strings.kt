@@ -44,7 +44,7 @@ object Strings {
         const val SAVE = "Сохранить"
         const val UPDATE = "Обновить"
         const val NAME = "Название рецепта"
-        const val DESCRIPTION = "Описание (необязательно)"
+        const val DESCRIPTION = "Описание"
     }
 
     object Buttons {
