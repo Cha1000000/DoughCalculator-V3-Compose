@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.easycook.doughcalculator.models.DoughRecipe
 import com.easycook.doughcalculator.models.IngredientType
 import com.easycook.doughcalculator.viewmodel.RecipeViewModel
+import com.easycook.doughcalculator.resources.Strings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,7 +42,7 @@ fun CalculatorScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TopAppBar(
-            title = { Text(recipe?.name ?: "Новый рецепт") },
+            title = { Text(recipe?.name ?: Strings.Navigation.NEW_RECIPE) },
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, "Назад")
@@ -76,10 +77,10 @@ fun CalculatorScreen(
             modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Ингредиент", modifier = Modifier.weight(0.20f))
-            Text("Граммы", modifier = Modifier.weight(0.25f))
-            Text("Проценты", modifier = Modifier.weight(0.25f))
-            Text("Коррекция", modifier = Modifier.weight(0.25f))
+            Text(Strings.Calculator.INGREDIENT, modifier = Modifier.weight(0.20f))
+            Text(Strings.Calculator.GRAMS, modifier = Modifier.weight(0.25f))
+            Text(Strings.Calculator.PERCENTS, modifier = Modifier.weight(0.25f))
+            Text(Strings.Calculator.CORRECTION, modifier = Modifier.weight(0.25f))
         }
 
         // Список ингредиентов
@@ -91,14 +92,14 @@ fun CalculatorScreen(
             ) {
                 Text(
                     text = when (ingredient.ingredient) {
-                        IngredientType.Flour -> "Мука"
-                        IngredientType.Water -> "Вода"
-                        IngredientType.Salt -> "Соль"
-                        IngredientType.Sugar -> "Сахар"
-                        IngredientType.Butter -> "Масло"
-                        IngredientType.Yeast -> "Дрожжи"
-                        IngredientType.Milk -> "Молоко"
-                        IngredientType.Egg -> "Яйца"
+                        IngredientType.Flour -> Strings.Ingredients.FLOUR
+                        IngredientType.Water -> Strings.Ingredients.WATER
+                        IngredientType.Salt -> Strings.Ingredients.SALT
+                        IngredientType.Sugar -> Strings.Ingredients.SUGAR
+                        IngredientType.Butter -> Strings.Ingredients.BUTTER
+                        IngredientType.Yeast -> Strings.Ingredients.YEAST
+                        IngredientType.Milk -> Strings.Ingredients.MILK
+                        IngredientType.Egg -> Strings.Ingredients.EGGS
                     },
                     modifier = Modifier.weight(0.20f)
                 )
@@ -141,7 +142,7 @@ fun CalculatorScreen(
             // Отображение предупреждений валидации под полями ввода
             if (ingredient.ingredient == IngredientType.Water && isWaterValidationWarn) {
                 Text(
-                    text = "⚠️ Рекомендуемая норма воды: 60–80%",
+                    text = Strings.Validation.WATER_WARNING,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.fillMaxWidth().padding(start = 8.dp)
@@ -149,7 +150,7 @@ fun CalculatorScreen(
             }
             if (ingredient.ingredient == IngredientType.Salt && isSaltValidationError) {
                 Text(
-                    text = "❗️ Допустимая норма соли - не более 2,5%",
+                    text = Strings.Validation.SALT_ERROR,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.fillMaxWidth().padding(start = 8.dp)
@@ -163,27 +164,27 @@ fun CalculatorScreen(
             onClick = { showSaveDialog = true },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(if (recipe == null) "Сохранить рецепт" else "Обновить рецепт")
+            Text(if (recipe == null) Strings.Recipe.SAVE_RECIPE else Strings.Recipe.UPDATE_RECIPE)
         }
     }
 
     if (showSaveDialog) {
         AlertDialog(
             onDismissRequest = { showSaveDialog = false },
-            title = { Text(if (recipe == null) "Сохранить рецепт" else "Обновить рецепт") },
+            title = { Text(if (recipe == null) Strings.Recipe.SAVE_RECIPE else Strings.Recipe.UPDATE_RECIPE) },
             text = {
                 Column {
                     OutlinedTextField(
                         value = recipeName,
                         onValueChange = { recipeName = it },
-                        label = { Text("Название рецепта") },
+                        label = { Text(Strings.Recipe.NAME) },
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
                         value = recipeDescription,
                         onValueChange = { recipeDescription = it },
-                        label = { Text("Описание (необязательно)") },
+                        label = { Text(Strings.Recipe.DESCRIPTION) },
                         modifier = Modifier.fillMaxWidth(),
                         minLines = 3
                     )
@@ -198,12 +199,12 @@ fun CalculatorScreen(
                     },
                     enabled = recipeName.isNotBlank()
                 ) {
-                    Text(if (recipe == null) "Сохранить" else "Обновить")
+                    Text(if (recipe == null) Strings.Recipe.SAVE else Strings.Recipe.UPDATE)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showSaveDialog = false }) {
-                    Text("Отмена")
+                    Text(Strings.Buttons.CANCEL)
                 }
             }
         )

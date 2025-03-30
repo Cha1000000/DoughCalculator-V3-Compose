@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.easycook.doughcalculator.models.DoughRecipe
 import com.easycook.doughcalculator.viewmodel.RecipeViewModel
+import com.easycook.doughcalculator.resources.Strings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,12 +29,12 @@ fun RecipeListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Мои рецепты") },
+                title = { Text(Strings.Navigation.MY_RECIPES) },
                 actions = {
                     IconButton(onClick = onNavigateToCalculator) {
                         Icon(
                             imageVector = Icons.Default.Add,
-                            contentDescription = "Добавить рецепт"
+                            contentDescription = Strings.Navigation.NEW_RECIPE
                         )
                     }
                 }
@@ -107,7 +108,7 @@ private fun RecipeCard(
     if (showDeleteConfirmation) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirmation = false },
-            title = { Text("Подтверждение") },
+            title = { Text(Strings.AlertDialogs.CONFIRM) },
             text = { Text("Вы уверены, что хотите удалить рецепт '${recipe.name}'?") },
             confirmButton = {
                 TextButton(
@@ -116,12 +117,12 @@ private fun RecipeCard(
                         showDeleteConfirmation = false
                     }
                 ) {
-                    Text("Удалить")
+                    Text(Strings.Buttons.DELETE)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteConfirmation = false }) {
-                    Text("Отмена")
+                    Text(Strings.Buttons.CANCEL)
                 }
             }
         )
