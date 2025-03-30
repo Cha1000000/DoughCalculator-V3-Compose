@@ -41,162 +41,182 @@ fun CalculatorScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(12.dp)
-            .verticalScroll(scrollState),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        TopAppBar(
-            title = { Text(recipe?.name ?: Strings.Navigation.NEW_RECIPE) },
-            navigationIcon = {
-                IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Назад")
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp)
+                .verticalScroll(scrollState),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            TopAppBar(
+                title = { Text(recipe?.name ?: Strings.Navigation.NEW_RECIPE) },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Назад")
+                    }
                 }
-            }
-        )
+            )
 
-        // Переключатель режима расчёта
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(Strings.Calculator.MODE)
-            Row(modifier = Modifier.padding(start = 16.dp)) {
-                RadioButton(
-                    selected = isCalculateByWeight,
-                    onClick = { viewModel.setCalculationMode(true) }
-                )
-                Text(Strings.Calculator.BY_WEIGHT, modifier = Modifier.align(Alignment.CenterVertically))
-                Spacer(Modifier.width(16.dp))
-                RadioButton(
-                    selected = !isCalculateByWeight,
-                    onClick = { viewModel.setCalculationMode(false) }
-                )
-                Text(Strings.Calculator.BY_PERCENTS, modifier = Modifier.align(Alignment.CenterVertically))
-            }
-        }
-
-        // Заголовки столбцов
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(Strings.Calculator.INGREDIENT, modifier = Modifier.weight(0.20f))
-            Text(Strings.Calculator.GRAMS, modifier = Modifier.weight(0.25f))
-            Text(Strings.Calculator.PERCENTS, modifier = Modifier.weight(0.25f))
-            Text(Strings.Calculator.CORRECTION, modifier = Modifier.weight(0.25f))
-        }
-
-        // Список ингредиентов
-        ingredients.forEach { ingredient ->
+            // Переключатель режима расчёта
             Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = when (ingredient.ingredient) {
-                        IngredientType.Flour -> Strings.Ingredients.FLOUR
-                        IngredientType.Water -> Strings.Ingredients.WATER
-                        IngredientType.Salt -> Strings.Ingredients.SALT
-                        IngredientType.Sugar -> Strings.Ingredients.SUGAR
-                        IngredientType.Butter -> Strings.Ingredients.BUTTER
-                        IngredientType.Yeast -> Strings.Ingredients.YEAST
-                        IngredientType.Milk -> Strings.Ingredients.MILK
-                        IngredientType.Egg -> Strings.Ingredients.EGGS
-                    },
-                    modifier = Modifier.weight(0.20f)
-                )
-
-                OutlinedTextField(
-                    value = ingredient.quantity,
-                    onValueChange = { value ->
-                        viewModel.updateIngredient(ingredient.ingredient, value, true)
-                    },
-                    enabled = isCalculateByWeight || ingredient.ingredient == IngredientType.Flour,
-                    modifier = Modifier.weight(0.24f),
-                    singleLine = true
-                )
-
-                Spacer(modifier = Modifier.weight(0.01f))
-
-                OutlinedTextField(
-                    value = ingredient.percent,
-                    onValueChange = { value ->
-                        viewModel.updateIngredient(ingredient.ingredient, value, false)
-                    },
-                    enabled = !isCalculateByWeight && ingredient.ingredient != IngredientType.Flour,
-                    modifier = Modifier.weight(0.24f),
-                    singleLine = true
-                )
-
-                Spacer(modifier = Modifier.weight(0.01f))
-
-                OutlinedTextField(
-                    value = ingredient.correction,
-                    onValueChange = { value ->
-                        viewModel.updateCorrection(ingredient.ingredient, value)
-                    },
-                    enabled = ingredient.ingredient == IngredientType.Flour,
-                    modifier = Modifier.weight(0.25f),
-                    singleLine = true
-                )
-            }
-
-            // Отображение предупреждений валидации под полями ввода
-            if (ingredient.ingredient == IngredientType.Water && isWaterValidationWarn) {
-                Text(
-                    text = Strings.Validation.WATER_WARNING,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.fillMaxWidth().padding(start = 8.dp)
-                )
-            }
-            if (ingredient.ingredient == IngredientType.Salt && isSaltValidationError) {
-                Text(
-                    text = Strings.Validation.SALT_ERROR,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.fillMaxWidth().padding(start = 8.dp)
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Отображение описания рецепта
-        recipe?.description?.takeIf { it.isNotBlank() }?.let { description ->
-            Surface(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = Strings.Recipe.DESCRIPTION,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                Text(Strings.Calculator.MODE)
+                Row(modifier = Modifier.padding(start = 16.dp)) {
+                    RadioButton(
+                        selected = isCalculateByWeight,
+                        onClick = { viewModel.setCalculationMode(true) }
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(Strings.Calculator.BY_WEIGHT, modifier = Modifier.align(Alignment.CenterVertically))
+                    Spacer(Modifier.width(16.dp))
+                    RadioButton(
+                        selected = !isCalculateByWeight,
+                        onClick = { viewModel.setCalculationMode(false) }
+                    )
+                    Text(Strings.Calculator.BY_PERCENTS, modifier = Modifier.align(Alignment.CenterVertically))
+                }
+            }
+
+            // Заголовки столбцов
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(Strings.Calculator.INGREDIENT, modifier = Modifier.weight(0.20f))
+                Text(Strings.Calculator.GRAMS, modifier = Modifier.weight(0.25f))
+                Text(Strings.Calculator.PERCENTS, modifier = Modifier.weight(0.25f))
+                Text(Strings.Calculator.CORRECTION, modifier = Modifier.weight(0.25f))
+            }
+
+            // Список ингредиентов
+            ingredients.forEach { ingredient ->
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
-                        text = description,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        text = when (ingredient.ingredient) {
+                            IngredientType.Flour -> Strings.Ingredients.FLOUR
+                            IngredientType.Water -> Strings.Ingredients.WATER
+                            IngredientType.Salt -> Strings.Ingredients.SALT
+                            IngredientType.Sugar -> Strings.Ingredients.SUGAR
+                            IngredientType.Butter -> Strings.Ingredients.BUTTER
+                            IngredientType.Yeast -> Strings.Ingredients.YEAST
+                            IngredientType.Milk -> Strings.Ingredients.MILK
+                            IngredientType.Egg -> Strings.Ingredients.EGGS
+                        },
+                        modifier = Modifier.weight(0.20f)
+                    )
+
+                    OutlinedTextField(
+                        value = ingredient.quantity,
+                        onValueChange = { value ->
+                            viewModel.updateIngredient(ingredient.ingredient, value, true)
+                        },
+                        enabled = isCalculateByWeight || ingredient.ingredient == IngredientType.Flour,
+                        modifier = Modifier.weight(0.24f),
+                        singleLine = true
+                    )
+
+                    Spacer(modifier = Modifier.weight(0.01f))
+
+                    OutlinedTextField(
+                        value = ingredient.percent,
+                        onValueChange = { value ->
+                            viewModel.updateIngredient(ingredient.ingredient, value, false)
+                        },
+                        enabled = !isCalculateByWeight && ingredient.ingredient != IngredientType.Flour,
+                        modifier = Modifier.weight(0.24f),
+                        singleLine = true
+                    )
+
+                    Spacer(modifier = Modifier.weight(0.01f))
+
+                    OutlinedTextField(
+                        value = ingredient.correction,
+                        onValueChange = { value ->
+                            viewModel.updateCorrection(ingredient.ingredient, value)
+                        },
+                        enabled = ingredient.ingredient == IngredientType.Flour,
+                        modifier = Modifier.weight(0.25f),
+                        singleLine = true
+                    )
+                }
+
+                // Отображение предупреждений валидации под полями ввода
+                if (ingredient.ingredient == IngredientType.Water && isWaterValidationWarn) {
+                    Text(
+                        text = Strings.Validation.WATER_WARNING,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.fillMaxWidth().padding(start = 8.dp)
+                    )
+                }
+                if (ingredient.ingredient == IngredientType.Salt && isSaltValidationError) {
+                    Text(
+                        text = Strings.Validation.SALT_ERROR,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.fillMaxWidth().padding(start = 8.dp)
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Отображение описания рецепта
+            recipe?.description?.takeIf { it.isNotBlank() }?.let { description ->
+                Surface(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = Strings.Recipe.DESCRIPTION,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = description,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+
+            // Добавляем отступ снизу для кнопки
+            Spacer(modifier = Modifier.height(80.dp))
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = { showSaveDialog = true },
-            modifier = Modifier.fillMaxWidth()
+        // Кнопка сохранения/обновления всегда внизу
+        Surface(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .padding(12.dp),
+            shadowElevation = 6.dp,
+            shape = MaterialTheme.shapes.medium,
+            color = MaterialTheme.colorScheme.surface
         ) {
-            Text(if (recipe == null) Strings.Recipe.SAVE_RECIPE else Strings.Recipe.UPDATE_RECIPE)
+            Button(
+                onClick = { showSaveDialog = true },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
+                    .height(52.dp)
+            ) {
+                Text(
+                    text = if (recipe == null) Strings.Recipe.SAVE_RECIPE else Strings.Recipe.UPDATE_RECIPE,
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
         }
     }
 
