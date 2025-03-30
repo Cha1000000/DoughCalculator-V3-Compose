@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.easycook.doughcalculator.models.DoughRecipe
 import com.easycook.doughcalculator.viewmodel.RecipeViewModel
+import com.easycook.doughcalculator.resources.Strings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,12 +29,12 @@ fun RecipeListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Мои рецепты") },
+                title = { Text(Strings.Navigation.MY_RECIPES) },
                 actions = {
                     IconButton(onClick = onNavigateToCalculator) {
                         Icon(
                             imageVector = Icons.Default.Add,
-                            contentDescription = "Добавить рецепт"
+                            contentDescription = Strings.Navigation.NEW_RECIPE
                         )
                     }
                 }
