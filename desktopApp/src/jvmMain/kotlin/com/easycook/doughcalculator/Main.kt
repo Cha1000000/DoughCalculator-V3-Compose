@@ -1,5 +1,6 @@
 package com.easycook.doughcalculator
 
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
@@ -9,6 +10,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import androidx.compose.ui.window.WindowPosition
+import androidx.compose.ui.window.WindowPlacement
 import com.easycook.doughcalculator.models.DoughRecipe
 import com.easycook.doughcalculator.repository.InMemoryRecipeRepository
 import com.easycook.doughcalculator.resources.Strings
@@ -26,9 +28,9 @@ sealed class Screen {
 
 fun main() = application {
     val windowState = rememberWindowState(
-        size = DpSize(800.dp, 800.dp),
+        placement = WindowPlacement.Floating,
         position = WindowPosition.Aligned(Alignment.Center),
-        isMinimized = false
+        size = DpSize(600.dp, 820.dp)
     )
     val repository = InMemoryRecipeRepository()
     val viewModel = RecipeViewModel(repository)
@@ -37,11 +39,12 @@ fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
         title = Strings.APP_NAME,
-        state = windowState
+        state = windowState,
+        resizable = true,
     ) {
         MaterialTheme {
             Surface(
-                modifier = Modifier,
+                modifier = Modifier.sizeIn(minWidth = 600.dp, minHeight = 800.dp),
                 color = MaterialTheme.colorScheme.background
             ) {
                 when (val screen = currentScreen) {

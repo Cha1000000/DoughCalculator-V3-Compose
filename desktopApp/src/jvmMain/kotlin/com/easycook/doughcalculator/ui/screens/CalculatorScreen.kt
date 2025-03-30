@@ -12,6 +12,8 @@ import com.easycook.doughcalculator.models.DoughRecipe
 import com.easycook.doughcalculator.models.IngredientType
 import com.easycook.doughcalculator.viewmodel.RecipeViewModel
 import com.easycook.doughcalculator.resources.Strings
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,6 +31,8 @@ fun CalculatorScreen(
     val isWaterValidationWarn by viewModel.isWaterValidationWarn.collectAsState()
     val isSaltValidationError by viewModel.isSaltValidationError.collectAsState()
 
+    val scrollState = rememberScrollState()
+
     LaunchedEffect(recipe) {
         if (recipe != null) {
             viewModel.loadRecipe(recipe)
@@ -38,7 +42,10 @@ fun CalculatorScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(12.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(12.dp)
+            .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TopAppBar(
