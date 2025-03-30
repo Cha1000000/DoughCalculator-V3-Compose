@@ -56,19 +56,19 @@ fun CalculatorScreen(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Режим расчёта:")
+            Text(Strings.Calculator.MODE)
             Row(modifier = Modifier.padding(start = 16.dp)) {
                 RadioButton(
                     selected = isCalculateByWeight,
                     onClick = { viewModel.setCalculationMode(true) }
                 )
-                Text("По весу", modifier = Modifier.align(Alignment.CenterVertically))
+                Text(Strings.Calculator.BY_WEIGHT, modifier = Modifier.align(Alignment.CenterVertically))
                 Spacer(Modifier.width(16.dp))
                 RadioButton(
                     selected = !isCalculateByWeight,
                     onClick = { viewModel.setCalculationMode(false) }
                 )
-                Text("По процентам", modifier = Modifier.align(Alignment.CenterVertically))
+                Text(Strings.Calculator.BY_PERCENTS, modifier = Modifier.align(Alignment.CenterVertically))
             }
         }
 

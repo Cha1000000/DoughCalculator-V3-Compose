@@ -14,6 +14,10 @@ object Strings {
         const val GRAMS = "Граммы"
         const val PERCENTS = "Проценты"
         const val CORRECTION = "Коррекция"
+        const val MODE = "Режим расчета:"
+        const val MODE_MOBILE = "Считать по"
+        const val BY_WEIGHT = "По весу"
+        const val BY_PERCENTS = "По процентам"
     }
 
     object Ingredients {
@@ -51,5 +55,6 @@ object Strings {
     object AlertDialogs {
         const val WARNING = "Предупреждение"
         const val CONFIRM = "Подтверждение"
+        const val DELETE_RECIPE_CONFIRMATION = "Вы уверены, что хотите удалить рецепт '%s'?"
     }
 } 

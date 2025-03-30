@@ -109,7 +109,7 @@ private fun RecipeCard(
         AlertDialog(
             onDismissRequest = { showDeleteConfirmation = false },
             title = { Text(Strings.AlertDialogs.CONFIRM) },
-            text = { Text("Вы уверены, что хотите удалить рецепт '${recipe.name}'?") },
+            text = { Text(Strings.AlertDialogs.DELETE_RECIPE_CONFIRMATION.format(recipe.name)) },
             confirmButton = {
                 TextButton(
                     onClick = {
