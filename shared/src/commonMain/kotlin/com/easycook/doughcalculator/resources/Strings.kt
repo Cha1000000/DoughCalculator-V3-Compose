@@ -4,6 +4,8 @@ package com.easycook.doughcalculator.resources
  * Общие текстовые ресурсы для всех платформ
  */
 object Strings {
+    const val APP_NAME = "Тестулятор"
+
     object Navigation {
         const val MY_RECIPES = "Мои рецепты"
         const val NEW_RECIPE = "Новый рецепт"
