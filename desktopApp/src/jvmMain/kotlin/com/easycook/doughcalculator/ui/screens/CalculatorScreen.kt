@@ -190,8 +190,6 @@ fun CalculatorScreen(
                     }
                 }
             }
-
-            // Добавляем отступ снизу для кнопки
             Spacer(modifier = Modifier.height(80.dp))
         }
 
@@ -200,7 +198,7 @@ fun CalculatorScreen(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(top = 12.dp),
             shadowElevation = 6.dp,
             shape = MaterialTheme.shapes.medium,
             color = MaterialTheme.colorScheme.surface

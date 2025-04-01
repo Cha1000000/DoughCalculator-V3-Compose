@@ -52,6 +52,7 @@ object Strings {
         const val NO = "Нет"
         const val CANCEL = "Отмена"
         const val DELETE = "Удалить"
+        const val UNDERSTAND = "Понятно"
     }
 
     object AlertDialogs {

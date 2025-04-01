@@ -8,6 +8,12 @@ plugins {
 kotlin {
     jvm {
         withJava()
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "17"
+                freeCompilerArgs = listOf("-Xskip-prerelease-check", "-Xjvm-default=all")
+            }
+        }
     }
     sourceSets {
         val jvmMain by getting {

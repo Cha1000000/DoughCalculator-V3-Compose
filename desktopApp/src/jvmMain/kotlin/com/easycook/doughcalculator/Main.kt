@@ -12,13 +12,14 @@ import androidx.compose.ui.window.rememberWindowState
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowPlacement
 import com.easycook.doughcalculator.models.DoughRecipe
-import com.easycook.doughcalculator.repository.InMemoryRecipeRepository
+import com.easycook.doughcalculator.repository.FileRecipeRepository
 import com.easycook.doughcalculator.resources.Strings
 import com.easycook.doughcalculator.ui.screens.CalculatorScreen
 import com.easycook.doughcalculator.ui.screens.RecipeListScreen
 import com.easycook.doughcalculator.viewmodel.RecipeViewModel
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import java.io.File
 
 sealed class Screen {
     object RecipeList : Screen()
@@ -27,12 +28,25 @@ sealed class Screen {
 }
 
 fun main() = application {
+    // Создаем файл для хранения рецептов в директории приложения
+    val appDir = File("recipes")
+    val dataFile = File(appDir, "recipes.json")
+    
+    // Создаем директорию, если ее нет
+    appDir.mkdirs()
+    
+    println("==================================================")
+    println("Рецепты сохраняются в файл: ${dataFile.absolutePath}")
+    println("==================================================")
+
     val windowState = rememberWindowState(
         placement = WindowPlacement.Floating,
         position = WindowPosition.Aligned(Alignment.Center),
         size = DpSize(600.dp, 820.dp)
     )
-    val repository = InMemoryRecipeRepository()
+    
+    // Используем FileRecipeRepository вместо InMemoryRecipeRepository
+    val repository = FileRecipeRepository(dataFile)
     val viewModel = RecipeViewModel(repository)
     var currentScreen by remember { mutableStateOf<Screen>(Screen.RecipeList) }
 

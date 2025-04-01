@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.easycook.doughcalculator.models.DoughRecipe
 import com.easycook.doughcalculator.viewmodel.RecipeViewModel
 import com.easycook.doughcalculator.resources.Strings
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,12 +27,19 @@ fun RecipeListScreen(
     onNavigateToRecipe: (DoughRecipe) -> Unit
 ) {
     val recipes by viewModel.recipes.collectAsState()
+    var showStorageInfo by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(Strings.Navigation.MY_RECIPES) },
                 actions = {
+                    IconButton(onClick = { showStorageInfo = true }) {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = "Информация о хранении"
+                        )
+                    }
                     IconButton(onClick = onNavigateToCalculator) {
                         Icon(
                             imageVector = Icons.Default.Add,
@@ -59,6 +68,10 @@ fun RecipeListScreen(
                 )
             }
         }
+    }
+    
+    if (showStorageInfo) {
+        StorageInfoDialog(onDismissRequest = { showStorageInfo = false })
     }
 }
 
@@ -127,4 +140,42 @@ private fun RecipeCard(
             }
         )
     }
+}
+
+@Composable
+private fun StorageInfoDialog(
+    onDismissRequest: () -> Unit
+) {
+    // Используется для показа пути к файлу с рецептами
+    val dataFile = File("recipes/recipes.json").absolutePath
+
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = { Text("Информация о хранении") },
+        text = {
+            Column {
+                Text("Ваши рецепты сохраняются между запусками приложения в файл:")
+                Spacer(modifier = Modifier.height(8.dp))
+                Surface(
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.padding(vertical = 4.dp).fillMaxWidth()
+                ) {
+                    Text(
+                        text = dataFile,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("Вы можете скопировать этот файл для создания резервной копии рецептов.")
+            }
+        },
+        confirmButton = {
+            Button(onClick = onDismissRequest) {
+                Text(Strings.Buttons.UNDERSTAND)
+            }
+        }
+    )
 } 
