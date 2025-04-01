@@ -1,6 +1,7 @@
 package com.easycook.doughcalculator.repository
 
 import com.easycook.doughcalculator.models.DoughRecipe
+import com.easycook.doughcalculator.resources.StringsDesktop
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -58,9 +59,9 @@ class FileRecipeRepository(private val dataFile: File) : DoughRecipeRepository {
             
             // Записываем в файл
             dataFile.writeText(jsonString)
-            println("Рецепты успешно сохранены в: ${dataFile.absolutePath}")
+            println(StringsDesktop.Repository.RECIPES_SAVED.format(dataFile.absolutePath))
         } catch (e: Exception) {
-            println("Ошибка при сохранении рецептов: ${e.message}")
+            println(StringsDesktop.Repository.SAVE_ERROR.format(e.message))
         }
     }
     
@@ -75,12 +76,12 @@ class FileRecipeRepository(private val dataFile: File) : DoughRecipeRepository {
                 recipes.value = loadedRecipes
                 nextId = (loadedRecipes.maxOfOrNull { it.id ?: 0 } ?: 0) + 1
                 
-                println("Загружено ${loadedRecipes.size} рецептов из: ${dataFile.absolutePath}")
+                println(StringsDesktop.Repository.RECIPES_LOADED.format(loadedRecipes.size, dataFile.absolutePath))
             } else {
-                println("Файл рецептов не существует или пуст: ${dataFile.absolutePath}")
+                println(StringsDesktop.Repository.FILE_NOT_EXISTS.format(dataFile.absolutePath))
             }
         } catch (e: Exception) {
-            println("Ошибка при загрузке рецептов: ${e.message}")
+            println(StringsDesktop.Repository.LOAD_ERROR.format(e.message))
         }
     }
 } 

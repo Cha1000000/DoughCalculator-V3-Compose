@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.easycook.doughcalculator.models.DoughRecipe
 import com.easycook.doughcalculator.viewmodel.RecipeViewModel
 import com.easycook.doughcalculator.resources.Strings
+import com.easycook.doughcalculator.resources.StringsDesktop
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,7 +38,7 @@ fun RecipeListScreen(
                     IconButton(onClick = { showStorageInfo = true }) {
                         Icon(
                             imageVector = Icons.Default.Info,
-                            contentDescription = "Информация о хранении"
+                            contentDescription = StringsDesktop.IconsDescriptions.STORAGE_INFO
                         )
                     }
                     IconButton(onClick = onNavigateToCalculator) {
@@ -105,14 +106,14 @@ private fun RecipeCard(
             IconButton(onClick = onFavoriteClick) {
                 Icon(
                     imageVector = if (recipe.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    contentDescription = "Избранное"
+                    contentDescription = StringsDesktop.IconsDescriptions.FAVORITE
                 )
             }
             
             IconButton(onClick = { showDeleteConfirmation = true }) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Удалить"
+                    contentDescription = StringsDesktop.IconsDescriptions.DELETE
                 )
             }
         }
@@ -151,10 +152,10 @@ private fun StorageInfoDialog(
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        title = { Text("Информация о хранении") },
+        title = { Text(StringsDesktop.StorageInfo.DIALOG_TITLE) },
         text = {
             Column {
-                Text("Ваши рецепты сохраняются между запусками приложения в файл:")
+                Text(StringsDesktop.StorageInfo.RECIPES_SAVED_TO_FILE)
                 Spacer(modifier = Modifier.height(8.dp))
                 Surface(
                     color = MaterialTheme.colorScheme.surfaceVariant,
@@ -169,7 +170,7 @@ private fun StorageInfoDialog(
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("Вы можете скопировать этот файл для создания резервной копии рецептов.")
+                Text(StringsDesktop.StorageInfo.BACKUP_INFO)
             }
         },
         confirmButton = {
