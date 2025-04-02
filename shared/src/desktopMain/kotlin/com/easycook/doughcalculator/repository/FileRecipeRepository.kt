@@ -5,7 +5,6 @@ import com.easycook.doughcalculator.resources.StringsDesktop
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -26,7 +25,6 @@ class FileRecipeRepository(private val dataFile: File) : DoughRecipeRepository {
     init {
         // Создаем директорию, если она не существует
         dataFile.parentFile?.mkdirs()
-        
         // Загружаем рецепты из файла при создании репозитория
         loadFromFile()
     }
@@ -54,10 +52,7 @@ class FileRecipeRepository(private val dataFile: File) : DoughRecipeRepository {
     
     private fun saveToFile() {
         try {
-            // Сериализуем список рецептов в JSON
             val jsonString = json.encodeToString(recipes.value)
-            
-            // Записываем в файл
             dataFile.writeText(jsonString)
             println(StringsDesktop.Repository.RECIPES_SAVED.format(dataFile.absolutePath))
         } catch (e: Exception) {
@@ -68,11 +63,8 @@ class FileRecipeRepository(private val dataFile: File) : DoughRecipeRepository {
     private fun loadFromFile() {
         try {
             if (dataFile.exists() && dataFile.length() > 0) {
-                // Читаем и десериализуем JSON из файла
                 val jsonString = dataFile.readText()
                 val loadedRecipes = json.decodeFromString<List<DoughRecipe>>(jsonString)
-                
-                // Обновляем список рецептов и nextId
                 recipes.value = loadedRecipes
                 nextId = (loadedRecipes.maxOfOrNull { it.id ?: 0 } ?: 0) + 1
                 

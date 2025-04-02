@@ -42,7 +42,7 @@ class RecipeViewModel(
     private fun loadRecipes() {
         scope.launch {
             repository.getAllRecipes().collectLatest { recipes ->
-                _recipes.value = recipes
+                _recipes.value = recipes.sortedByDescending { it.isFavorite }
             }
         }
     }
@@ -121,7 +121,7 @@ class RecipeViewModel(
         )
     }
 
-    private fun Double.toStringOrEmpty(): String = if (this > 0.0) this.toString() else ""
+    private fun Double.toStringOrEmpty(): String = if (this.toDouble() > 0.0) this.toString() else ""
 
     fun setCalculationMode(isWeight: Boolean) {
         _isCalculateByWeight.value = isWeight
