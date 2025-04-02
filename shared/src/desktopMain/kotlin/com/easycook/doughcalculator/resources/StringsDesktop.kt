@@ -8,6 +8,8 @@ object StringsDesktop {
         const val DIALOG_TITLE = "Информация о хранении"
         const val RECIPES_SAVED_TO_FILE = "Ваши рецепты сохраняются между запусками приложения в файл:"
         const val BACKUP_INFO = "Вы можете скопировать этот файл для создания резервной копии рецептов."
+        const val COPY_PATH = "Копировать путь"
+        const val PATH_COPIED = "Путь скопирован в буфер обмена"
     }
     
     object IconsDescriptions {
