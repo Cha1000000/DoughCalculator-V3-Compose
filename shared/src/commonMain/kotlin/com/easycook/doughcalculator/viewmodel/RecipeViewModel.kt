@@ -245,7 +245,7 @@ class RecipeViewModel(
             id = currentRecipe?.id,
             name = name,
             description = description,
-            isFavorite = currentRecipe?.isFavorite == false,
+            isFavorite = currentRecipe?.isFavorite == true,
             flourGram = flour?.quantity?.toDoubleOrNull() ?: 0.0,
             waterGram = ingredients.find { it.ingredient == IngredientType.Water }?.quantity?.toDoubleOrNull() ?: 0.0,
             saltGram = ingredients.find { it.ingredient == IngredientType.Salt }?.quantity?.toDoubleOrNull() ?: 0.0,

@@ -14,6 +14,9 @@ import com.easycook.doughcalculator.viewmodel.RecipeViewModel
 import com.easycook.doughcalculator.resources.Strings
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -253,18 +256,44 @@ fun CalculatorScreen(
             title = { Text(if (recipe == null) Strings.Recipe.SAVE_RECIPE else Strings.Recipe.UPDATE_RECIPE) },
             text = {
                 Column {
+                    val nameFieldFocus = remember { FocusRequester() }
+                    val descriptionFieldFocus = remember { FocusRequester() }
+                    
                     OutlinedTextField(
                         value = recipeName,
                         onValueChange = { recipeName = it },
                         label = { Text(Strings.Recipe.NAME) },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(nameFieldFocus)
+                            .onPreviewKeyEvent { keyEvent ->
+                                if (
+                                      (keyEvent.key == Key.Tab || keyEvent.key == Key.DirectionDown) && 
+                                      keyEvent.type == KeyEventType.KeyDown
+                                   ) {
+                                    descriptionFieldFocus.requestFocus()
+                                    true
+                                } else {
+                                    false
+                                }
+                            }
                     )
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
                         value = recipeDescription,
                         onValueChange = { recipeDescription = it },
                         label = { Text(Strings.Recipe.DESCRIPTION) },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(descriptionFieldFocus)
+                            .onPreviewKeyEvent { keyEvent ->
+                                if (keyEvent.key == Key.DirectionUp && keyEvent.type == KeyEventType.KeyDown) {
+                                    nameFieldFocus.requestFocus()
+                                    true
+                                } else {
+                                    false
+                                }
+                            },
                         minLines = 3
                     )
                 }
