@@ -26,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -138,7 +139,8 @@ private fun RecipeCard(
             IconButton(onClick = onFavoriteClick) {
                 Icon(
                     imageVector = if (recipe.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    contentDescription = StringsDesktop.IconsDescriptions.FAVORITE
+                    contentDescription = StringsDesktop.IconsDescriptions.FAVORITE,
+                    tint = if (recipe.isFavorite) colorScheme.primary else LocalContentColor.current,
                 )
             }
             
@@ -194,8 +196,8 @@ private fun StorageInfoDialog(
                 Spacer(modifier = Modifier.height(8.dp))
                 
                 Surface(
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = colorScheme.surfaceVariant,
+                    contentColor = colorScheme.onSurfaceVariant,
                     shape = MaterialTheme.shapes.medium,
                     modifier = Modifier.padding(vertical = 4.dp).fillMaxWidth()
                 ) {
@@ -222,7 +224,7 @@ private fun StorageInfoDialog(
                         ) {
                             Text(
                                 text = if (isCopied) StringsDesktop.StorageInfo.PATH_COPIED else StringsDesktop.StorageInfo.COPY_PATH,
-                                color = if (isCopied) MaterialTheme.colorScheme.primary else LocalContentColor.current
+                                color = if (isCopied) colorScheme.primary else LocalContentColor.current
                             )
                         }
                     }
