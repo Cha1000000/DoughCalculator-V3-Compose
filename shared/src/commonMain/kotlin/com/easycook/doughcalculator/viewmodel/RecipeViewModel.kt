@@ -72,9 +72,9 @@ class RecipeViewModel(
         return listOf(
             IngredientUiModel(
                 ingredient = IngredientType.Flour,
-                quantity = recipe.flourGram.toString(),
+                quantity = recipe.flourGram.toStringOrEmpty(),
                 percent = "100",
-                correction = recipe.flourGramCorrection.toString()
+                correction = recipe.flourGramCorrection.toStringOrEmpty()
             ),
             IngredientUiModel(
                 ingredient = IngredientType.Water,
@@ -235,7 +235,7 @@ class RecipeViewModel(
 
     private fun Double.toStringOrEmpty(): String = if (this > 0.0) this.formatToTwoDecimalPlaces() else ""
     
-    private fun Double.formatToTwoDecimalPlaces(): String = "%.2f".format(this).replace(",", ".")
+    private fun Double.formatToTwoDecimalPlaces(): String = "%.2f".format(this).replace(",", ".").replace(".00", "")
 
     fun saveRecipe(name: String, description: String = "") {
         val ingredients = _ingredients.value

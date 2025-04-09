@@ -22,6 +22,35 @@ fun CalculatorScreen(
     recipe: DoughRecipe? = null,
     onNavigateBack: () -> Unit
 ) {
+    // Функция для фильтрации числовых значений (неотрицательные числа с точностью до 2 знаков)
+    fun filterNumericInput(input: String): String {
+        // Удаляем точку или запятую, если это первый символ
+        val sanitizedInput = if (input.startsWith(".") || input.startsWith(",")) {
+            input.substring(1)
+        } else {
+            input
+        }
+        
+        return sanitizedInput.replace(",", ".")  // Заменяем запятые на точки
+            .replace(Regex("[^0-9.]"), "")  // Удаляем все символы кроме цифр и точки
+            .let {
+                if (it.count { c -> c == '.' } > 1) {  // Если больше одной точки
+                    val firstDotIndex = it.indexOf('.')
+                    it.substring(0, firstDotIndex + 1) + it.substring(firstDotIndex + 1).replace(".", "")
+                } else {
+                    it
+                }
+            }
+            .let {
+                if (it.contains(".")) {  // Ограничиваем до 2 знаков после точки
+                    val parts = it.split(".")
+                    parts[0] + "." + parts[1].take(2)
+                } else {
+                    it
+                }
+            }
+    }
+
     var showSaveDialog by remember { mutableStateOf(false) }
     var recipeName by remember { mutableStateOf(recipe?.name ?: "") }
     var recipeDescription by remember { mutableStateOf(recipe?.description ?: "") }
@@ -115,7 +144,7 @@ fun CalculatorScreen(
                     OutlinedTextField(
                         value = ingredient.quantity,
                         onValueChange = { value ->
-                            viewModel.updateIngredient(ingredient.ingredient, value, true)
+                            viewModel.updateIngredient(ingredient.ingredient, filterNumericInput(value), true)
                         },
                         enabled = isCalculateByWeight || ingredient.ingredient == IngredientType.Flour,
                         modifier = Modifier.weight(0.24f),
@@ -127,7 +156,7 @@ fun CalculatorScreen(
                     OutlinedTextField(
                         value = ingredient.percent,
                         onValueChange = { value ->
-                            viewModel.updateIngredient(ingredient.ingredient, value, false)
+                            viewModel.updateIngredient(ingredient.ingredient, filterNumericInput(value), false)
                         },
                         enabled = !isCalculateByWeight && ingredient.ingredient != IngredientType.Flour,
                         modifier = Modifier.weight(0.24f),
@@ -139,7 +168,7 @@ fun CalculatorScreen(
                     OutlinedTextField(
                         value = ingredient.correction,
                         onValueChange = { value ->
-                            viewModel.updateCorrection(ingredient.ingredient, value)
+                            viewModel.updateCorrection(ingredient.ingredient, filterNumericInput(value))
                         },
                         enabled = ingredient.ingredient == IngredientType.Flour,
                         modifier = Modifier.weight(0.25f),
