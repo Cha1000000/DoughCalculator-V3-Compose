@@ -78,50 +78,48 @@ class RecipeViewModel(
             ),
             IngredientUiModel(
                 ingredient = IngredientType.Water,
-                quantity = recipe.waterGram.toString(),
+                quantity = recipe.waterGram.toStringOrEmpty(),
                 percent = recipe.waterPercent.toStringOrEmpty(),
-                correction = recipe.waterGramCorrection.toString()
+                correction = recipe.waterGramCorrection.toStringOrEmpty()
             ),
             IngredientUiModel(
                 ingredient = IngredientType.Salt,
-                quantity = recipe.saltGram.toString(),
+                quantity = recipe.saltGram.toStringOrEmpty(),
                 percent = recipe.saltPercent.toStringOrEmpty(),
-                correction = recipe.saltGramCorrection.toString()
+                correction = recipe.saltGramCorrection.toStringOrEmpty()
             ),
             IngredientUiModel(
                 ingredient = IngredientType.Sugar,
-                quantity = recipe.sugarGram.toString(),
+                quantity = recipe.sugarGram.toStringOrEmpty(),
                 percent = recipe.sugarPercent.toStringOrEmpty(),
-                correction = recipe.sugarGramCorrection.toString()
+                correction = recipe.sugarGramCorrection.toStringOrEmpty()
             ),
             IngredientUiModel(
                 ingredient = IngredientType.Butter,
-                quantity = recipe.butterGram.toString(),
+                quantity = recipe.butterGram.toStringOrEmpty(),
                 percent = recipe.butterPercent.toStringOrEmpty(),
-                correction = recipe.butterGramCorrection.toString()
+                correction = recipe.butterGramCorrection.toStringOrEmpty()
             ),
             IngredientUiModel(
                 ingredient = IngredientType.Yeast,
-                quantity = recipe.yeastGram.toString(),
+                quantity = recipe.yeastGram.toStringOrEmpty(),
                 percent = recipe.yeastPercent.toStringOrEmpty(),
-                correction = recipe.yeastGramCorrection.toString()
+                correction = recipe.yeastGramCorrection.toStringOrEmpty()
             ),
             IngredientUiModel(
                 ingredient = IngredientType.Milk,
-                quantity = recipe.milkGram.toString(),
+                quantity = recipe.milkGram.toStringOrEmpty(),
                 percent = recipe.milkPercent.toStringOrEmpty(),
-                correction = recipe.milkGramCorrection.toString()
+                correction = recipe.milkGramCorrection.toStringOrEmpty()
             ),
             IngredientUiModel(
                 ingredient = IngredientType.Egg,
-                quantity = recipe.eggGram.toString(),
+                quantity = recipe.eggGram.toStringOrEmpty(),
                 percent = recipe.eggPercent.toStringOrEmpty(),
-                correction = recipe.eggGramCorrection.toString()
+                correction = recipe.eggGramCorrection.toStringOrEmpty()
             )
         )
     }
-
-    private fun Double.toStringOrEmpty(): String = if (this.toDouble() > 0.0) this.toString() else ""
 
     fun setCalculationMode(isWeight: Boolean) {
         _isCalculateByWeight.value = isWeight
@@ -196,7 +194,7 @@ class RecipeViewModel(
         val updatedIngredients = _ingredients.value.map { ingredient ->
             if (ingredient.ingredient != IngredientType.Flour) {
                 val percent = ingredient.percent.toDoubleOrNull() ?: 0.0
-                ingredient.copy(quantity = ((flourWeight * percent) / 100).toString())
+                ingredient.copy(quantity = ((flourWeight * percent) / 100).toStringOrEmpty())
             } else {
                 ingredient
             }
@@ -204,52 +202,73 @@ class RecipeViewModel(
         _ingredients.value = updatedIngredients
     }
 
-    private fun applyCorrections() {
-        val flour = _ingredients.value.find { it.ingredient == IngredientType.Flour }
-        val correction = flour?.correction?.toDoubleOrNull() ?: return
-
-        val updatedIngredients = _ingredients.value.map { ingredient ->
+    fun applyCorrections() {
+        val flourIndex = _ingredients.value.indexOfFirst { it.ingredient == IngredientType.Flour }
+        if (flourIndex == -1) return
+        
+        val ingredients = _ingredients.value
+        val flourCorrection = ingredients[flourIndex].correction
+        val flourCorrectionValue = flourCorrection.toDoubleOrNull()
+        if (flourCorrectionValue == null || flourCorrectionValue <= 0) {
+            val updatedIngredients = ingredients.map { it.copy(correction = "") }
+            _ingredients.value = updatedIngredients
+            return
+        }
+        
+        // Рассчитываем коррекции для других ингредиентов на основе коррекции муки
+        val updatedIngredients = ingredients.map { ingredient ->
             if (ingredient.ingredient != IngredientType.Flour) {
                 val percent = ingredient.percent.toDoubleOrNull() ?: 0.0
-                ingredient.copy(
-                    correction = ((correction * percent) / 100).toString()
-                )
+                if (percent > 0) {
+                    val correctionValue = (flourCorrectionValue * percent / 100)
+                    ingredient.copy(correction = correctionValue.toStringOrEmpty())
+                } else {
+                    ingredient.copy(correction = "")
+                }
             } else {
                 ingredient
             }
         }
+        
         _ingredients.value = updatedIngredients
     }
 
+    private fun Double.toStringOrEmpty(): String = if (this > 0.0) this.formatToTwoDecimalPlaces() else ""
+    
+    private fun Double.formatToTwoDecimalPlaces(): String = "%.2f".format(this).replace(",", ".")
+
     fun saveRecipe(name: String, description: String = "") {
+        val ingredients = _ingredients.value
+        val flour = ingredients.find { it.ingredient == IngredientType.Flour }
+        
         val recipe = DoughRecipe(
             id = currentRecipe?.id,
             name = name,
             description = description,
             isFavorite = currentRecipe?.isFavorite == false,
-            flourGram = _ingredients.value.find { it.ingredient == IngredientType.Flour }?.quantity?.toIntOrNull() ?: 0,
-            waterGram = _ingredients.value.find { it.ingredient == IngredientType.Water }?.quantity?.toIntOrNull() ?: 0,
-            saltGram = _ingredients.value.find { it.ingredient == IngredientType.Salt }?.quantity?.toIntOrNull() ?: 0,
-            sugarGram = _ingredients.value.find { it.ingredient == IngredientType.Sugar }?.quantity?.toIntOrNull() ?: 0,
-            butterGram = _ingredients.value.find { it.ingredient == IngredientType.Butter }?.quantity?.toIntOrNull() ?: 0,
-            yeastGram = _ingredients.value.find { it.ingredient == IngredientType.Yeast }?.quantity?.toIntOrNull() ?: 0,
-            milkGram = _ingredients.value.find { it.ingredient == IngredientType.Milk }?.quantity?.toIntOrNull() ?: 0,
-            eggGram = _ingredients.value.find { it.ingredient == IngredientType.Egg }?.quantity?.toIntOrNull() ?: 0,
-            waterPercent = _ingredients.value.find { it.ingredient == IngredientType.Water }?.percent?.toDoubleOrNull() ?: 0.0,
-            saltPercent = _ingredients.value.find { it.ingredient == IngredientType.Salt }?.percent?.toDoubleOrNull() ?: 0.0,
-            sugarPercent = _ingredients.value.find { it.ingredient == IngredientType.Sugar }?.percent?.toDoubleOrNull() ?: 0.0,
-            butterPercent = _ingredients.value.find { it.ingredient == IngredientType.Butter }?.percent?.toDoubleOrNull() ?: 0.0,
-            yeastPercent = _ingredients.value.find { it.ingredient == IngredientType.Yeast }?.percent?.toDoubleOrNull() ?: 0.0,
-            milkPercent = _ingredients.value.find { it.ingredient == IngredientType.Milk }?.percent?.toDoubleOrNull() ?: 0.0,
-            eggPercent = _ingredients.value.find { it.ingredient == IngredientType.Egg }?.percent?.toDoubleOrNull() ?: 0.0,
-            flourGramCorrection = _ingredients.value.find { it.ingredient == IngredientType.Flour }?.correction?.toIntOrNull() ?: 0,
-            waterGramCorrection = _ingredients.value.find { it.ingredient == IngredientType.Water }?.correction?.toIntOrNull() ?: 0,
-            saltGramCorrection = _ingredients.value.find { it.ingredient == IngredientType.Salt }?.correction?.toIntOrNull() ?: 0,
-            sugarGramCorrection = _ingredients.value.find { it.ingredient == IngredientType.Sugar }?.correction?.toIntOrNull() ?: 0,
-            butterGramCorrection = _ingredients.value.find { it.ingredient == IngredientType.Butter }?.correction?.toIntOrNull() ?: 0,
-            yeastGramCorrection = _ingredients.value.find { it.ingredient == IngredientType.Yeast }?.correction?.toIntOrNull() ?: 0,
-            milkGramCorrection = _ingredients.value.find { it.ingredient == IngredientType.Milk }?.correction?.toIntOrNull() ?: 0,
-            eggGramCorrection = _ingredients.value.find { it.ingredient == IngredientType.Egg }?.correction?.toIntOrNull() ?: 0
+            flourGram = flour?.quantity?.toDoubleOrNull() ?: 0.0,
+            waterGram = ingredients.find { it.ingredient == IngredientType.Water }?.quantity?.toDoubleOrNull() ?: 0.0,
+            saltGram = ingredients.find { it.ingredient == IngredientType.Salt }?.quantity?.toDoubleOrNull() ?: 0.0,
+            sugarGram = ingredients.find { it.ingredient == IngredientType.Sugar }?.quantity?.toDoubleOrNull() ?: 0.0,
+            butterGram = ingredients.find { it.ingredient == IngredientType.Butter }?.quantity?.toDoubleOrNull() ?: 0.0,
+            yeastGram = ingredients.find { it.ingredient == IngredientType.Yeast }?.quantity?.toDoubleOrNull() ?: 0.0,
+            milkGram = ingredients.find { it.ingredient == IngredientType.Milk }?.quantity?.toDoubleOrNull() ?: 0.0,
+            eggGram = ingredients.find { it.ingredient == IngredientType.Egg }?.quantity?.toDoubleOrNull() ?: 0.0,
+            waterPercent = ingredients.find { it.ingredient == IngredientType.Water }?.percent?.toDoubleOrNull() ?: 0.0,
+            saltPercent = ingredients.find { it.ingredient == IngredientType.Salt }?.percent?.toDoubleOrNull() ?: 0.0,
+            sugarPercent = ingredients.find { it.ingredient == IngredientType.Sugar }?.percent?.toDoubleOrNull() ?: 0.0,
+            butterPercent = ingredients.find { it.ingredient == IngredientType.Butter }?.percent?.toDoubleOrNull() ?: 0.0,
+            yeastPercent = ingredients.find { it.ingredient == IngredientType.Yeast }?.percent?.toDoubleOrNull() ?: 0.0,
+            milkPercent = ingredients.find { it.ingredient == IngredientType.Milk }?.percent?.toDoubleOrNull() ?: 0.0,
+            eggPercent = ingredients.find { it.ingredient == IngredientType.Egg }?.percent?.toDoubleOrNull() ?: 0.0,
+            flourGramCorrection = flour?.correction?.toDoubleOrNull() ?: 0.0,
+            waterGramCorrection = ingredients.find { it.ingredient == IngredientType.Water }?.correction?.toDoubleOrNull() ?: 0.0,
+            saltGramCorrection = ingredients.find { it.ingredient == IngredientType.Salt }?.correction?.toDoubleOrNull() ?: 0.0,
+            sugarGramCorrection = ingredients.find { it.ingredient == IngredientType.Sugar }?.correction?.toDoubleOrNull() ?: 0.0,
+            butterGramCorrection = ingredients.find { it.ingredient == IngredientType.Butter }?.correction?.toDoubleOrNull() ?: 0.0,
+            yeastGramCorrection = ingredients.find { it.ingredient == IngredientType.Yeast }?.correction?.toDoubleOrNull() ?: 0.0,
+            milkGramCorrection = ingredients.find { it.ingredient == IngredientType.Milk }?.correction?.toDoubleOrNull() ?: 0.0,
+            eggGramCorrection = ingredients.find { it.ingredient == IngredientType.Egg }?.correction?.toDoubleOrNull() ?: 0.0
         )
 
         if (currentRecipe == null) {

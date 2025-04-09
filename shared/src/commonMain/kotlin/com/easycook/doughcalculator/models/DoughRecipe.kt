@@ -10,14 +10,14 @@ data class DoughRecipe(
     var isFavorite: Boolean = false,
     
     // Основные ингредиенты в граммах
-    var flourGram: Int = 0,
-    var waterGram: Int = 0,
-    var saltGram: Int = 0,
-    var sugarGram: Int = 0,
-    var butterGram: Int = 0,
-    var yeastGram: Int = 0,
-    var milkGram: Int = 0,
-    var eggGram: Int = 0,
+    var flourGram: Double = 0.0,
+    var waterGram: Double = 0.0,
+    var saltGram: Double = 0.0,
+    var sugarGram: Double = 0.0,
+    var butterGram: Double = 0.0,
+    var yeastGram: Double = 0.0,
+    var milkGram: Double = 0.0,
+    var eggGram: Double = 0.0,
     
     // Проценты ингредиентов
     var waterPercent: Double = 0.0,
@@ -29,12 +29,12 @@ data class DoughRecipe(
     var eggPercent: Double = 0.0,
     
     // Корректировки в граммах
-    var flourGramCorrection: Int = 0,
-    var waterGramCorrection: Int = 0,
-    var saltGramCorrection: Int = 0,
-    var sugarGramCorrection: Int = 0,
-    var butterGramCorrection: Int = 0,
-    var yeastGramCorrection: Int = 0,
-    var milkGramCorrection: Int = 0,
-    var eggGramCorrection: Int = 0
+    var flourGramCorrection: Double = 0.0,
+    var waterGramCorrection: Double = 0.0,
+    var saltGramCorrection: Double = 0.0,
+    var sugarGramCorrection: Double = 0.0,
+    var butterGramCorrection: Double = 0.0,
+    var yeastGramCorrection: Double = 0.0,
+    var milkGramCorrection: Double = 0.0,
+    var eggGramCorrection: Double = 0.0
 ) 
